@@ -1,3 +1,5 @@
+import { format, isToday, isYesterday, differenceInDays } from "date-fns";
+
 /**
  * Deterministically generates a vibrant, accessible HSL color pair from any string (like a user ID or name).
  */
@@ -49,7 +51,6 @@ export function getInitials(name: string): string {
 export function formatPhoneNumber(phone: string): string {
   if (!phone) return "";
   const cleaned = phone.trim();
-  // If already standard +1 (202) 555-0101 format or raw +12025550101
   if (cleaned.startsWith("+1") && cleaned.length === 12) {
     const area = cleaned.slice(2, 5);
     const mid = cleaned.slice(5, 8);
@@ -69,4 +70,42 @@ export function sanitizeSearchQuery(query: string): string {
   const stripped = query.replace(/^\+/, "").trim();
   // Escape regex special characters
   return stripped.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
+ * Formats a timestamp for conversation items in the sidebar list.
+ */
+export function formatConversationDate(dateStr?: string): string {
+  if (!dateStr) return "";
+  try {
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return "";
+
+    if (isToday(date)) {
+      return format(date, "h:mm a");
+    }
+    if (isYesterday(date)) {
+      return "Yesterday";
+    }
+    if (differenceInDays(new Date(), date) < 7) {
+      return format(date, "EEE"); // e.g. "Wed"
+    }
+    return format(date, "MMM d"); // e.g. "Aug 21"
+  } catch {
+    return "";
+  }
+}
+
+/**
+ * Formats a message timestamp inside chat bubbles.
+ */
+export function formatMessageTimestamp(dateStr?: string): string {
+  if (!dateStr) return "";
+  try {
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return "";
+    return format(date, "h:mm a");
+  } catch {
+    return "";
+  }
 }
