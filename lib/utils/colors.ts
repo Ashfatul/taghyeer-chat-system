@@ -109,3 +109,19 @@ export function formatMessageTimestamp(dateStr?: string): string {
     return "";
   }
 }
+
+/**
+ * Formats calendar date dividers between message groups.
+ */
+export function formatDateDivider(dateStr?: string): string {
+  if (!dateStr) return "";
+  try {
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return "";
+    if (isToday(date)) return "Today";
+    if (isYesterday(date)) return "Yesterday";
+    return format(date, "EEEE, MMMM d, yyyy");
+  } catch {
+    return "";
+  }
+}
