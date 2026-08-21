@@ -4,24 +4,38 @@ import React, { useState, useEffect } from "react";
 import { useConversations } from "@/hooks/useConversations";
 import ChatSidebar from "./ChatSidebar";
 import ChatArea from "./ChatArea";
+import GroupInfoDrawer from "./group/GroupInfoDrawer";
 import { Sparkles, Plus } from "lucide-react";
 import NewChatModal from "./NewChatModal";
 import { useAuth } from "@/context/AuthContext";
+import { GroupConversation } from "@/lib/types";
 
 export default function ChatShell() {
   const { user } = useAuth();
   const { data: conversations = [], isLoading } = useConversations();
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const [isNewChatModalOpen, setIsNewChatModalOpen] = useState(false);
+  const [isGroupDrawerOpen, setIsGroupDrawerOpen] = useState(false);
 
   // Auto-select first conversation if available on desktop
   useEffect(() => {
-    if (!activeConversationId && conversations.length > 0 && typeof window !== "undefined" && window.innerWidth >= 1024) {
+    if (
+      !activeConversationId &&
+      conversations.length > 0 &&
+      typeof window !== "undefined" &&
+      window.innerWidth >= 1024
+    ) {
       setActiveConversationId(conversations[0]._id);
     }
   }, [conversations, activeConversationId]);
 
   const activeConversation = conversations.find((c) => c._id === activeConversationId);
+
+  // Close group drawer when switching conversations
+  const handleSelectConversation = (id: string) => {
+    setActiveConversationId(id);
+    setIsGroupDrawerOpen(false);
+  };
 
   return (
     <div className="h-screen w-full bg-[#0B0F19] text-slate-100 flex overflow-hidden">
@@ -30,25 +44,39 @@ export default function ChatShell() {
         conversations={conversations}
         activeId={activeConversationId}
         isLoading={isLoading}
-        onSelectConversation={(id) => setActiveConversationId(id)}
+        onSelectConversation={handleSelectConversation}
         className={activeConversationId ? "hidden md:flex" : "flex"}
       />
 
-      {/* Main Chat Area */}
+      {/* Center Main Chat Panel Area */}
       <main
         className={`flex-1 flex flex-col h-full bg-[#0B0F19] relative ${
           !activeConversationId ? "hidden md:flex" : "flex"
         }`}
       >
         {activeConversation ? (
-          <ChatArea
-            conversation={activeConversation}
-            currentUserId={user?._id}
-            onBack={() => setActiveConversationId(null)}
-            onToggleGroupInfo={() => {
-              // Group details drawer will be fully wired in Phase 4
-            }}
-          />
+          <div className="flex-1 flex h-full overflow-hidden relative">
+            <ChatArea
+              conversation={activeConversation}
+              currentUserId={user?._id}
+              onBack={() => setActiveConversationId(null)}
+              onToggleGroupInfo={() => setIsGroupDrawerOpen((prev) => !prev)}
+            />
+
+            {/* Right Slide-over Group Details Drawer */}
+            {activeConversation.type === "group" && (
+              <GroupInfoDrawer
+                isOpen={isGroupDrawerOpen}
+                onClose={() => setIsGroupDrawerOpen(false)}
+                conversation={activeConversation as GroupConversation}
+                currentUserId={user?._id}
+                onLeaveSuccess={() => {
+                  setActiveConversationId(null);
+                  setIsGroupDrawerOpen(false);
+                }}
+              />
+            )}
+          </div>
         ) : (
           /* Empty Chat Selected State */
           <div className="flex-1 flex flex-col items-center justify-center p-8 text-center my-auto select-none">
@@ -74,7 +102,7 @@ export default function ChatShell() {
       <NewChatModal
         isOpen={isNewChatModalOpen}
         onClose={() => setIsNewChatModalOpen(false)}
-        onSelectConversation={(id) => setActiveConversationId(id)}
+        onSelectConversation={handleSelectConversation}
         currentUserId={user?._id}
       />
     </div>
