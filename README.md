@@ -1,29 +1,23 @@
 # Taghyeer Real-Time Chat System
 
-> **A production-grade, WebSocket-powered real-time chat application built with Next.js 16 (App Router), React 19, Socket.io v4, TanStack Query v5, and Tailwind CSS v4.**
+A real-time, WebSocket-powered chat application built with **Next.js 16 (App Router)**, **React 19**, **Socket.io v4**, **TanStack Query v5**, and **Tailwind CSS v4**.
 
-🌐 **Live Deployment:** [https://taghyeer-chat-system.vercel.app/](https://taghyeer-chat-system.vercel.app/)  
-📖 **API Specification:** [`docs/api-documentation.md`](./docs/api-documentation.md)  
-📮 **Postman Collection:** [`docs/postman_collection.json`](./docs/postman_collection.json)  
-📜 **Swagger / OpenAPI 3.0 Spec:** [`docs/swagger.json`](./docs/swagger.json)  
-🧠 **Technical Thought Process:** [`docs/thought-process.md`](./docs/thought-process.md)  
-✅ **Tasks & Requirements Checklist:** [`docs/tasks-checklist.md`](./docs/tasks-checklist.md)  
-
----
-
-## ⚡ Live Demo & Quick Start
-
-### 🌐 Live Application
-You can test and evaluate the deployed production application immediately at:  
-👉 **[https://taghyeer-chat-system.vercel.app/](https://taghyeer-chat-system.vercel.app/)**
-
-*Includes 1-click test credentials and an interactive sandbox on the homepage!*
+- 🌐 **Live Demo:** [https://taghyeer-chat-system.vercel.app/](https://taghyeer-chat-system.vercel.app/)
+- 📖 **API Documentation (Part 1):** [`docs/api-documentation.md`](./docs/api-documentation.md)
+- 🧠 **Thought Process & Decisions (Part 3):** [`docs/thought-process.md`](./docs/thought-process.md)
+- ✅ **Requirements Checklist:** [`docs/tasks-checklist.md`](./docs/tasks-checklist.md)
+- 📮 **Postman Collection:** [`docs/postman_collection.json`](./docs/postman_collection.json)
+- 📜 **Swagger / OpenAPI Spec:** [`docs/swagger.json`](./docs/swagger.json)
 
 ---
 
-### 💻 Local Development Setup
+## Quick Start & Local Setup
 
-#### 1. Installation
+### 1. Prerequisites
+- Node.js 18.18+ or 20+
+- npm, yarn, or pnpm
+
+### 2. Installation
 ```bash
 # Clone repository
 git clone https://github.com/Ashfatul/taghyeer-chat-system.git
@@ -33,20 +27,20 @@ cd taghyeer-chat-system
 npm install
 ```
 
-#### 2. Environment Variables
-Create a `.env.local` file in the root directory:
+### 3. Environment Variables
+Create a `.env.local` file in the project root:
 ```env
 NEXT_PUBLIC_API_URL=https://frontend-task-chatapp.onrender.com/api
 NEXT_PUBLIC_SOCKET_URL=https://frontend-task-chatapp.onrender.com
 ```
 
-#### 3. Run Development Server
+### 4. Run Development Server
 ```bash
 npm run dev
 ```
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-#### 4. Production Build & Verification
+### 5. Build for Production
 ```bash
 npm run build
 npm start
@@ -54,155 +48,87 @@ npm start
 
 ---
 
-## 🌟 Feature Overview
+## Features Overview
 
-### 💬 Part 1: Real-Time Chat Hub (`/chat`)
-- **Passwordless Authentication (`/login`)**:
-  - Sign in with phone number and display name. Automatically creates accounts for new users.
-  - JWT session persistence in `localStorage` with automatic verification via `GET /api/auth/me`.
-  - 1-click demo accounts for instant evaluation.
-- **Dynamic Sidebar & Conversation Hub**:
-  - Real-time conversation list with active indicators, sender snippets (`"You: ..."` vs `"Alex: ..."`), and relative timestamps.
-  - Client-side search across conversations and message snippets.
-  - Shimmer loading skeletons and empty states.
-- **User Search & Direct Messaging**:
-  - Debounced search (300ms) querying `/api/users/search`.
-  - Regex sanitization avoiding server MongoDB 500 crashes on special characters (`+`, `*`, `?`, `[`).
-  - 1-click conversation starter.
-- **Multi-User Group Management & Roles**:
-  - Create groups with 2+ participants using interactive chip tokenizers.
-  - Slide-over **Group Info Drawer** showing metadata and creation dates.
-  - **Admin Governance**: Inline group renaming (`PATCH /api/conversations/:id`), participant invite modal, and member context menu (`⋮`) for promoting members to admin or removing them from the group.
-  - Self-service **Leave Group** action with confirmation dialog.
-- **High-Speed Message Stream & Composer**:
-  - **Distinct Bubbles**: Outgoing messages in Electric Indigo with bottom-right tail and delivery checks (`✓✓`); incoming messages in dark surface cards with bottom-left tail and deterministic HSL sender colors.
-  - **Smart Auto-Scroll Physics (`useSmartScroll`)**: Automatic scrolling to bottom by default; gracefully preserves reading position if scrolled up (>120px) and displays an animated floating `[ ↓ {N} New Messages ]` pill.
-  - **Infinite Cursor Pagination**: Prepending older historical messages (`before={timestamp}`) with scroll height delta compensation to eliminate layout jumps.
-  - **Instant Optimistic Sending**: Temporary ID generation, clock icon, and seamless status transition to delivered upon server acknowledgement.
-  - **Keyboard Ergonomics**: Auto-expanding textarea (44px to 140px), `Enter` to send, `Shift + Enter` for newlines, and quick emoji bar (👍, ❤️, 😂, 🎉, 🚀, 🔥, ✨, 👏).
+### Part 1: Real-Time Chat Application (`/chat`)
+- **Passwordless Authentication (`/login`):**
+  - Phone number + display name login with automatic registration for new users.
+  - JWT session persistence in `localStorage` verified via `GET /api/auth/me`.
+  - 1-click test accounts for instant evaluation.
+- **Conversations & Sidebar:**
+  - Real-time conversation list with active indicators, last message snippets, and timestamps.
+  - Client-side search across active conversations.
+  - Skeletons and empty states.
+- **User Search & Direct Messaging:**
+  - Debounced search (300ms) with client-side regex escaping to prevent server 500 crashes.
+  - In-memory directory caching for instant recall.
+- **Group Management & Roles:**
+  - Create groups with 2+ participants.
+  - Slide-over **Group Info Drawer** with member roster, admin badges, and creation dates.
+  - Group renaming, member invite modal, and member removal/admin promotion context menus.
+  - Self-service "Leave Group" action.
+- **Message Stream & Composer:**
+  - Asymmetric message bubbles with delivery checkmarks (`✓✓`).
+  - **Smart Scroll Physics (`useSmartScroll`):** Auto-scrolls to bottom by default; locks viewport position when scrolled up reading history, displaying a floating `[ ↓ N New Messages ]` button.
+  - **Reverse Infinite Cursor Pagination:** Prepends older history (`before={timestamp}`) while preserving scroll position.
+  - **Optimistic Send Pipeline:** Instant bubble rendering with clock icon, Web Audio chime, and inline 1-click retry on failure.
+  - Auto-expanding composer (44px to 140px) with emoji quick-bar and keyboard shortcuts (`Enter` to send, `Shift+Enter` for newline).
 
----
+### Part 2: Showcase Landing Page (`/`)
+- **Interactive In-Browser Live Chat Simulator:**
+  - Playable demo directly in the hero section without needing to log in.
+  - Allows evaluators to test typing simulation, direct/group switching, and scroll lock behavior.
+- **Interactive API & Architecture Inspector:**
+  - Live inspector displaying REST endpoints, sample request/response payloads, and WebSocket events.
+- **Responsive Dark Theme:**
+  - High-contrast dark aesthetic with smooth animations via Framer Motion and Tailwind CSS v4.
 
-### 🎨 Part 2: Creative Showcase Landing Page (`/`)
-- **Dark Luxury Glassmorphic Aesthetic**: Ambient multi-stop gradient glow, subtle grid texturing, and WCAG AAA/AA compliant typography.
-- **Interactive In-Browser Live Chat Simulator**:
-  - Embedded playable sandbox in the hero section.
-  - Switch between Direct and Group modes.
-  - Trigger simulated counterpart replies, typing indicators, and scroll lock tests without logging in.
-- **Bento Grid Architecture Breakdown**:
-  - Sub-millisecond WebSocket transport.
-  - Group collaboration & role governance.
-  - Viewport auto-scroll physics & reading lock.
-  - Zero-friction passwordless provisioning.
-- **Live API & Architecture Inspector**:
-  - Interactive REST endpoints viewer with sample request payloads, `200 OK` responses, and 1-click copy.
-  - WebSocket protocol specification (`message:new`, `conversation:updated`, `message:send`).
-  - Documented edge-case resilience matrix.
+### Bonus Elements
+1. **Procedural Web Audio Feedback:** Synthesized message send/receive micro-chimes via the Web Audio API (zero external asset latency), with a header mute toggle.
+2. **WebSocket Connection HUD:** Real-time indicator tracking live socket lifecycle (`Connected` / `Connecting...` / `Offline`).
+3. **1-Click Optimistic Failure Recovery:** Retry button to resend failed messages without re-typing.
 
 ---
 
-### 🎁 Bonus "One-Step-Ahead" Features
-1. **Web Audio API Feedback (Zero External Assets)**:
-   - Synthesized subtle audio chimes on message send (high chime) and message receive (soft pop).
-   - Audio mute/unmute toggle in `ChatHeader` with persistent storage.
-2. **Real-Time Connection HUD**: Live dynamic connection status badge in the chat header tracking real-time WebSocket lifecycle (`Connected` / `Connecting...` / `Offline`).
-3. **Optimistic Send Failure Recovery**: 1-click **Retry** button if network drops during message transmission.
-4. **Interactive Sandbox**: Playable live chat widget on the landing page for evaluators.
+## Tech Stack
+
+| Layer | Technology | Purpose |
+| :--- | :--- | :--- |
+| **Framework** | Next.js 16 (App Router) | Server components, routing, and Turbopack |
+| **UI Library** | React 19 | Core UI component lifecycle |
+| **Styling** | Tailwind CSS v4 | Utility-first styling with hardware-accelerated animations |
+| **State & Cache** | TanStack Query v5 | Server state caching, optimistic updates, and infinite cursor queries |
+| **Real-Time Gateway** | Socket.io Client v4 | Bidirectional WebSocket message and conversation event synchronization |
+| **Form Validation** | React Hook Form + Zod | Schema validation and input handling |
+| **Icons & Animation** | Lucide React + Framer Motion | UI icons and smooth landing page transitions |
+| **Type Safety** | TypeScript 5 (Strict Mode) | End-to-end type safety |
 
 ---
 
-## 🛠️ Tech Stack & Architecture
-
-| Layer | Technology |
-| :--- | :--- |
-| **Framework** | Next.js 16.3.2 (App Router & Turbopack) |
-| **UI Library** | React 19 |
-| **Styling** | Tailwind CSS v4 & Lucide Icons |
-| **State & Cache** | TanStack Query v5 (`@tanstack/react-query`) |
-| **Real-Time Gateway** | Socket.io Client v4 (`socket.io-client`) |
-| **Validation** | React Hook Form & Zod |
-| **Date Utilities** | Date-fns |
-| **Type Safety** | TypeScript 5 (Strict Mode) |
-
----
-
-## 📁 Project Structure
+## Project Structure
 
 ```
 taghyeer-chat-system/
-├── app/
-│   ├── (auth)/
-│   │   └── login/page.tsx      # Passwordless login with phone formatting & 1-click demos
-│   ├── chat/
-│   │   └── page.tsx            # Protected chat shell route
-│   ├── error.tsx               # Global error boundary
-│   ├── globals.css             # Tailwind v4 theme tokens & custom scrollbars
-│   ├── layout.tsx              # Root layout with Query & Auth context providers
-│   ├── not-found.tsx          # Custom 404 page
-│   └── page.tsx                # Creative Showcase Landing Page
+├── app/                  # Next.js App Router (Landing, Login, Chat, Error boundary)
 ├── components/
-│   ├── chat/
-│   │   ├── ChatArea.tsx        # Chat container (Header + Stream + Composer)
-│   │   ├── ChatHeader.tsx      # Active conversation header, presence & audio toggle
-│   │   ├── ChatSidebar.tsx     # User profile, search bar, new chat trigger, conversation list
-│   │   ├── ChatShell.tsx       # Responsive 3-pane layout shell
-│   │   ├── ConversationItem.tsx# Conversation row with sender preview & timestamps
-│   │   ├── ConversationList.tsx# Conversation list container with skeletons & search filter
-│   │   ├── MessageBubble.tsx   # Asymmetric bubbles, delivery checks & copy action
-│   │   ├── MessageInput.tsx    # Auto-expanding composer with validation & emoji bar
-│   │   ├── MessageList.tsx     # Message stream with date dividers & smart scroll
-│   │   ├── NewChatModal.tsx    # Dual-mode modal: Direct search & Group creation
-│   │   ├── ScrollToBottomButton.tsx # Floating unread messages bounce pill
-│   │   ├── UserAvatar.tsx      # HSL color hashing, initials & stacked group clusters
-│   │   └── group/
-│   │       ├── AddMembersModal.tsx  # User search & invite modal
-│   │       ├── GroupInfoDrawer.tsx  # Slide-over drawer with rename & member actions
-│   │       └── GroupMemberList.tsx  # Member roster with admin badges & context menu
-│   └── landing/
-│       ├── ArchitectureSection.tsx  # Interactive API & WebSocket protocol inspector
-│       ├── FeatureSection.tsx       # Bento grid feature showcase
-│       ├── InteractiveMiniChat.tsx  # In-browser live chat simulator widget
-│       ├── LandingFooter.tsx        # Navigation footer & credits
-│       ├── LandingNavbar.tsx        # Sticky glassmorphic header with live status
-│       └── TechStackSection.tsx     # Modern tech stack showcase
-├── context/
-│   ├── AuthContext.tsx         # JWT persistence, session validation & login/logout
-│   └── QueryProvider.tsx       # TanStack Query Client provider
-├── docs/
-│   ├── api-documentation.md    # Complete REST & WebSocket API specification
-│   ├── implementation-plan.md  # Comprehensive UI/UX design blueprint & plan
-│   ├── plan.md                 # Execution roadmap & deliverables index
-│   ├── requirements.md         # Candidate assignment instructions
-│   └── thought-process.md      # Detailed technical write-up & decisions
-├── hooks/
-│   ├── useConversations.ts     # Conversation list query & socket synchronization
-│   ├── useDebounce.ts          # Generic input debouncer for searches
-│   ├── useGroupMutations.ts    # Group renaming, member management & admin promotion
-│   ├── useMessages.ts          # Infinite cursor query, optimistic sends & audio cues
-│   └── useSmartScroll.ts       # Viewport detection, reading lock & prepend offset
-└── lib/
-    ├── api/                    # API client & modular resource services
-    ├── socket/                 # Socket.io client manager
-    ├── types/                  # TypeScript data models & schemas
-    └── utils/                  # Colors, dates, search engine & ranking, sound FX
+│   ├── chat/             # Chat UI (Sidebar, Area, Composer, Bubbles, Modals, Group drawer)
+│   └── landing/          # Landing page (Hero simulator, Feature cards, API inspector)
+├── context/              # Global React Context (AuthContext, QueryProvider)
+├── docs/                 # Assignment Deliverables (API Docs, Thought Process, Postman, Swagger)
+├── hooks/                # Custom hooks (useMessages, useConversations, useSmartScroll, useGroupMutations)
+├── lib/
+│   ├── api/              # HTTP client and modular REST services
+│   ├── socket/           # Socket.io connection manager
+│   ├── types/            # TypeScript data models and interfaces
+│   └── utils/            # Search ranking, regex sanitization, colors, and audio synthesizer
+└── public/               # Static assets & icons
 ```
 
 ---
 
-## 🧪 Verification & Build Status
+## Deliverables & Documentation
 
-- **TypeScript Typecheck**: Passed with 0 errors (`npx tsc --noEmit`).
-- **Production Build**: Successfully compiled 6/6 static routes with Next.js Turbopack (`npm run build`).
-
----
-
-## 📖 Thought Process & Documentation
-
-For the comprehensive technical write-up detailing:
-- Architectural decisions & trade-offs
-- UI/UX design rationale
-- AI tool usage declaration & manual interventions
-- API quirks & solutions (MongoDB regex sanitization, origin discrepancies)
-- Future roadmap
-
-Please consult [`docs/thought-process.md`](./docs/thought-process.md).
+- **Part 1 (API Specification):** [`docs/api-documentation.md`](./docs/api-documentation.md)
+- **Part 3 (Technical Thought Process):** [`docs/thought-process.md`](./docs/thought-process.md)
+- **Requirements Checklist:** [`docs/tasks-checklist.md`](./docs/tasks-checklist.md)
+- **Live Deployment:** [https://taghyeer-chat-system.vercel.app/](https://taghyeer-chat-system.vercel.app/)
