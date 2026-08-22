@@ -2,34 +2,48 @@
 
 > **A production-grade, WebSocket-powered real-time chat application built with Next.js 16 (App Router), React 19, Socket.io v4, TanStack Query v5, and Tailwind CSS v4.**
 
+🌐 **Live Deployment:** [https://taghyeer-chat-system.vercel.app/](https://taghyeer-chat-system.vercel.app/)  
+📖 **API Specification:** [`docs/api-documentation.md`](./docs/api-documentation.md)  
+🧠 **Technical Thought Process:** [`docs/thought-process.md`](./docs/thought-process.md)  
+
 ---
 
-## ⚡ Quick Start
+## ⚡ Live Demo & Quick Start
 
-### 1. Installation
+### 🌐 Live Application
+You can test and evaluate the deployed production application immediately at:  
+👉 **[https://taghyeer-chat-system.vercel.app/](https://taghyeer-chat-system.vercel.app/)**
+
+*Includes 1-click test credentials and an interactive sandbox on the homepage!*
+
+---
+
+### 💻 Local Development Setup
+
+#### 1. Installation
 ```bash
 # Clone repository
-git clone <repository-url>
+git clone https://github.com/Ashfatul/taghyeer-chat-system.git
 cd taghyeer-chat-system
 
 # Install dependencies
 npm install
 ```
 
-### 2. Environment Variables
+#### 2. Environment Variables
 Create a `.env.local` file in the root directory:
 ```env
 NEXT_PUBLIC_API_URL=https://frontend-task-chatapp.onrender.com/api
 NEXT_PUBLIC_SOCKET_URL=https://frontend-task-chatapp.onrender.com
 ```
 
-### 3. Run Development Server
+#### 3. Run Development Server
 ```bash
 npm run dev
 ```
-Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### 4. Production Build & Verification
+#### 4. Production Build & Verification
 ```bash
 npm run build
 npm start
