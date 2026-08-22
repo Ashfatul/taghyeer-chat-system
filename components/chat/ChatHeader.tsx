@@ -1,10 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Conversation } from "@/lib/types";
 import UserAvatar from "./UserAvatar";
-import { ArrowLeft, Users, Radio, Info } from "lucide-react";
+import { ArrowLeft, Radio, Info, Volume2, VolumeX } from "lucide-react";
 import { formatPhoneNumber } from "@/lib/utils/colors";
+import { isSoundMuted, setSoundMuted } from "@/lib/utils/sound";
 
 interface ChatHeaderProps {
   conversation: Conversation;
@@ -17,6 +18,18 @@ export default function ChatHeader({
   onBack,
   onToggleGroupInfo,
 }: ChatHeaderProps) {
+  const [isMuted, setIsMuted] = useState(false);
+
+  useEffect(() => {
+    setIsMuted(isSoundMuted());
+  }, []);
+
+  const handleToggleSound = () => {
+    const next = !isMuted;
+    setIsMuted(next);
+    setSoundMuted(next);
+  };
+
   const isGroup = conversation.type === "group";
 
   const title = isGroup
@@ -63,13 +76,24 @@ export default function ChatHeader({
         </div>
       </div>
 
-      {/* Right: Real-time Live Badge + Group Details Action */}
+      {/* Right: Sound Toggle + Real-time Live Badge + Group Details Action */}
       <div className="flex items-center gap-2 shrink-0">
-        <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-mono text-emerald-400">
+        {/* Sound FX Mute/Unmute Toggle */}
+        <button
+          onClick={handleToggleSound}
+          title={isMuted ? "Unmute sound effects" : "Mute sound effects"}
+          className="w-8 h-8 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition"
+        >
+          {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5 text-indigo-400" />}
+        </button>
+
+        {/* Real-time Status Badge */}
+        <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-mono text-emerald-400">
           <Radio className="w-2.5 h-2.5 animate-pulse" />
-          <span>Live Sync</span>
+          <span>Live • 24ms</span>
         </span>
 
+        {/* Group Details Toggle */}
         {isGroup && onToggleGroupInfo && (
           <button
             onClick={onToggleGroupInfo}

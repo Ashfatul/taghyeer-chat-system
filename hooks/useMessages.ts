@@ -8,6 +8,7 @@ import { Message, MessagesListResponse, Conversation } from "@/lib/types";
 import { getSocket } from "@/lib/socket/socket";
 import { useAuth } from "@/context/AuthContext";
 import { CONVERSATIONS_QUERY_KEY } from "./useConversations";
+import { playSentSound, playReceivedSound } from "@/lib/utils/sound";
 
 export function getMessagesQueryKey(conversationId: string) {
   return ["conversations", conversationId, "messages"];
@@ -123,6 +124,14 @@ export function useMessages(conversationId: string | null) {
             messages: [...updatedPages[0].messages, { ...newMessage, status: "delivered" }],
           };
 
+          const senderId =
+            typeof newMessage.sender === "string"
+              ? newMessage.sender
+              : newMessage.sender?._id;
+          if (senderId !== user?._id) {
+            playReceivedSound();
+          }
+
           return {
             ...oldData,
             pages: updatedPages,
@@ -136,7 +145,7 @@ export function useMessages(conversationId: string | null) {
     return () => {
       socket.off("message:new", handleNewMessage);
     };
-  }, [conversationId, isAuthenticated, queryClient]);
+  }, [conversationId, isAuthenticated, queryClient, user?._id]);
 
   return {
     ...query,
@@ -170,6 +179,8 @@ export function useSendMessage(conversationId: string) {
         createdAt: new Date().toISOString(),
         status: "sending",
       };
+
+      playSentSound();
 
       // Optimistically update message cache
       queryClient.setQueryData<{ pages: MessagesListResponse[]; pageParams: unknown[] }>(
