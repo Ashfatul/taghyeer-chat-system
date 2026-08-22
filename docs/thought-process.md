@@ -100,17 +100,31 @@ Both limitations were handled cleanly in the UI by hiding unsupported actions ra
 
 ## 4. AI Tool Usage & Workflow Transparency
 
-In full transparency, I used **Antigravity CLI (powered by Claude / Gemini models)** as an AI pair-programming assistant during this 24-hour assignment. Here is an honest breakdown of where AI was useful and where it fell short:
+In full transparency, I utilized **Antigravity CLI (powered by Claude and Gemini models)** as an AI pair-programming assistant during this assignment. AI was used strictly as a high-speed accelerator for boilerplate, repetitive scaffolding, and format conversion, while all architectural decisions, state synchronization, edge-case debugging, and custom algorithms were engineered manually.
 
-### 4.1 Where AI Accelerated the Build
-- **Initial Boilerplate & Schemas:** Rapidly scaffolding TypeScript interfaces from the Swagger documentation and setting up initial type definitions.
-- **Design Tokens & Skeletons:** Generating initial Tailwind CSS layout scaffolding, shimmer skeletons, and repetitive SVG icons.
-- **Documentation Formatting:** Converting my raw curl test notes and endpoint verification into structured OpenAPI 3.0 (`swagger.json`) and Postman collection files.
+### 4.1 Specific Tasks Where AI Was Used
+1. **TypeScript Interface Scaffolding (`lib/types/index.ts`):**
+   - Fed the raw Swagger schema endpoints to the AI to quickly generate base TypeScript interfaces (`User`, `Conversation`, `Message`, `AuthResponse`).
+2. **Repetitive UI Skeletons & Layout Scaffolding:**
+   - Prompted AI to generate repetitive Tailwind CSS shimmer placeholder cards for `ConversationList` and `MessageList` during loading states.
+3. **Specification & Collection Formatting:**
+   - Used AI to format my manual `curl` test endpoints and verified JSON payloads into standardized OpenAPI 3.0 (`docs/swagger.json`) and Postman Collection (`docs/postman_collection.json`) export files.
+4. **Static Brand Asset Generation:**
+   - Generated the multi-stop gradient SVG brand mark (`app/icon.svg`) and favicon binaries.
 
-### 4.2 Where AI Failed & Where I Had to Intervene
-- **The Socket Mismatch Bug:** AI's initial code assumed the backend would return identical payloads across REST and WebSockets. When the real-time replacement bug occurred, AI suggested adding arbitrary delays or re-fetching messages on every socket event (which killed performance). I diagnosed the root cause (`id` vs `_id` and timestamp types) using browser DevTools and wrote the custom normalizer myself.
-- **MongoDB Regex Crash:** AI initially suggested passing the search query directly to the API. When the server crashed on `+`, AI tried simple `.replace("+", "")`, which still failed on partial phone searches like `1000`. I designed the client-side user directory cache and token-based scoring algorithm to solve this properly.
-- **Scroll Physics:** AI suggested using a basic `scrollIntoView()` inside a `useEffect`, which created jarring viewport jumps whenever older paginated messages loaded or when a user was trying to read history. I scrapped that entirely and built the `useSmartScroll` scroll-height differential system.
+### 4.2 Where Deep Engineering & Manual Problem Solving Were Required
+1. **Real-Time WebSocket Cache Synchronization (`hooks/useMessages.ts`):**
+   - *The Challenge:* Basic AI-scaffolded cache updates assumed symmetrical payload structures between REST and WebSocket APIs. In practice, live multi-tab testing revealed the backend Socket.io server emitted `id` (integer timestamp) while REST used MongoDB `_id` (string hex). This caused socket messages to overwrite existing messages due to `undefined === undefined` match collisions.
+   - *Engineering Solution:* Rather than band-aiding with arbitrary re-fetches, I diagnosed the issue via network frames and engineered a unified payload normalizer and identity-matching layer that guarantees reliable message deduplication.
+2. **MongoDB Regex 500 Crash & Phone Search Limitation (`lib/utils/search.ts`):**
+   - *The Challenge:* Standard search queries passed directly to `GET /api/users/search?q=...` crashed the backend with HTTP 500 on `+` characters due to raw MongoDB regex parsing on the server.
+   - *Engineering Solution:* I analyzed the server error codes, built `escapeRegex()`, and implemented a client-side directory cache (`globalUserCache`) with an A-Z warmup engine and a custom token-based ranking algorithm (`matchUserScore`) supporting partial digits, area codes, and initials.
+3. **Viewport Scroll Physics & Reading Position Retention (`hooks/useSmartScroll.ts`):**
+   - *The Challenge:* Standard scrolling approaches (`scrollIntoView()`) break user experience by forcefully jumping the screen down when older messages are prepended or when reading historical context.
+   - *Engineering Solution:* I built `useSmartScroll` from scratch, calculating `scrollHeight` differentials before and after DOM updates to preserve exact reading positions during upward pagination.
+4. **Mutation Loading State Isolation (`components/chat/NewChatModal.tsx`):**
+   - *The Challenge:* Simple hook implementations tie loading spinners to a global mutation `isPending` state, which causes every row in a search list to spin when a single user is clicked.
+   - *Engineering Solution:* Refactored the modal to track discrete `startingUserId` identifiers, ensuring only the target button shows a spinner while preventing accidental duplicate requests.
 
 ---
 
