@@ -5,6 +5,7 @@
 🌐 **Live Deployment:** [https://taghyeer-chat-system.vercel.app/](https://taghyeer-chat-system.vercel.app/)  
 📖 **API Specification:** [`docs/api-documentation.md`](./docs/api-documentation.md)  
 🧠 **Technical Thought Process:** [`docs/thought-process.md`](./docs/thought-process.md)  
+✅ **Tasks & Requirements Checklist:** [`docs/tasks-checklist.md`](./docs/tasks-checklist.md)  
 
 ---
 
