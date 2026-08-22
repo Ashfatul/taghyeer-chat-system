@@ -436,7 +436,7 @@ export default function InteractiveMiniChat() {
             value={inputVal}
             onChange={(e) => setInputVal(e.target.value)}
             placeholder="Type a simulated message..."
-            className="flex-1 h-10 sm:h-11 bg-slate-950 border border-slate-800 rounded-xl px-3.5 sm:px-4 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition text-left min-w-0"
+            className="flex-1 h-10 sm:h-11 bg-slate-950 border border-slate-800 rounded-xl px-3.5 sm:px-4 text-base sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition text-left min-w-0"
           />
           <button
             type="submit"

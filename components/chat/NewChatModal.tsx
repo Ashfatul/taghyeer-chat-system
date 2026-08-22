@@ -245,7 +245,7 @@ export default function NewChatModal({
               onChange={(e) => setGroupName(e.target.value)}
               maxLength={40}
               required
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition"
+              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-base sm:text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition"
             />
 
             {/* Selected Participants Chips */}
@@ -280,7 +280,7 @@ export default function NewChatModal({
             placeholder="Search users by name or phone number..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-8 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition"
+            className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-8 py-2 text-base sm:text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition"
           />
           {searchQuery && (
             <button

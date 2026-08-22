@@ -186,7 +186,7 @@ export default function LoginPage() {
                   {...register("phone")}
                   className={`w-full bg-slate-950/80 border ${
                     errors.phone ? "border-rose-500" : "border-slate-800"
-                  } focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 transition focus:outline-none`}
+                  } focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-3.5 py-2.5 text-base sm:text-sm text-slate-100 placeholder-slate-500 transition focus:outline-none`}
                 />
               </div>
               {errors.phone ? (
@@ -214,7 +214,7 @@ export default function LoginPage() {
                 {...register("name")}
                 className={`w-full bg-slate-950/80 border ${
                   errors.name ? "border-rose-500" : "border-slate-800"
-                } focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 transition focus:outline-none`}
+                } focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-3.5 py-2.5 text-base sm:text-sm text-slate-100 placeholder-slate-500 transition focus:outline-none`}
               />
               {errors.name && (
                 <p className="text-[11px] text-rose-400 mt-1">{errors.name.message}</p>

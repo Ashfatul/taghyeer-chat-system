@@ -99,7 +99,7 @@ export default function ChatSidebar({
             placeholder="Search chats..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-950/80 border border-slate-800/80 rounded-xl pl-8 pr-7 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition"
+            className="w-full bg-slate-950/80 border border-slate-800/80 rounded-xl pl-8 pr-7 py-1.5 text-base sm:text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition"
           />
           {searchQuery && (
             <button

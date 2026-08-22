@@ -40,6 +40,29 @@ export default function ChatShell() {
     }
   }, [activeConversationId, queryClient]);
 
+  // Dynamic visualViewport synchronization for mobile Chrome & Safari
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.visualViewport) return;
+
+    const updateHeight = () => {
+      if (window.visualViewport) {
+        document.documentElement.style.setProperty(
+          "--visual-viewport-height",
+          `${window.visualViewport.height}px`
+        );
+      }
+    };
+
+    updateHeight();
+    window.visualViewport.addEventListener("resize", updateHeight);
+    window.visualViewport.addEventListener("scroll", updateHeight);
+
+    return () => {
+      window.visualViewport?.removeEventListener("resize", updateHeight);
+      window.visualViewport?.removeEventListener("scroll", updateHeight);
+    };
+  }, []);
+
   const activeConversation = conversations.find((c) => c._id === activeConversationId);
 
   // Close group drawer and clear unread badge when selecting conversations
@@ -50,7 +73,13 @@ export default function ChatShell() {
   };
 
   return (
-    <div className="h-screen h-[100dvh] w-full bg-[#0B0F19] text-slate-100 flex overflow-hidden">
+    <div
+      className="fixed inset-0 h-[100dvh] max-h-[100dvh] w-full bg-[#0B0F19] text-slate-100 flex overflow-hidden"
+      style={{
+        height: "var(--visual-viewport-height, 100dvh)",
+        maxHeight: "var(--visual-viewport-height, 100dvh)",
+      }}
+    >
       {/* Left Sidebar (visible on mobile if no conversation is selected, always visible on tablet/desktop) */}
       <ChatSidebar
         conversations={conversations}

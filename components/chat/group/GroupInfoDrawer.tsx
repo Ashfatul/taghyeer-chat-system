@@ -149,7 +149,7 @@ export default function GroupInfoDrawer({
                   value={editedName}
                   onChange={(e) => setEditedName(e.target.value)}
                   maxLength={40}
-                  className="flex-1 bg-slate-950 border border-indigo-500 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none"
+                  className="flex-1 bg-slate-950 border border-indigo-500 rounded-xl px-3 py-1.5 text-base sm:text-xs text-white focus:outline-none"
                   autoFocus
                 />
                 <button

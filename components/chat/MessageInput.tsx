@@ -77,8 +77,15 @@ export default function MessageInput({ onSendMessage, disabled = false }: Messag
     textareaRef.current?.focus();
   };
 
+  const handleFocus = () => {
+    // Keep input smoothly above mobile virtual keyboard on slide up
+    setTimeout(() => {
+      textareaRef.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }, 150);
+  };
+
   return (
-    <div className="p-3 sm:p-4 pb-safe bg-slate-900/95 border-t border-slate-800/80 backdrop-blur-xl relative select-none">
+    <div className="p-2.5 sm:p-4 pb-safe bg-slate-900/95 border-t border-slate-800/80 backdrop-blur-xl relative select-none shrink-0">
       {/* Quick Emoji Bar */}
       {showEmojiPicker && (
         <div className="mb-2.5 p-1.5 sm:p-2 rounded-2xl bg-slate-950/90 border border-slate-800/90 flex items-center gap-1.5 overflow-x-auto custom-scrollbar animate-fade-in shadow-xl backdrop-blur-md">
@@ -120,9 +127,10 @@ export default function MessageInput({ onSendMessage, disabled = false }: Messag
             value={text}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={handleKeyDown}
+            onFocus={handleFocus}
             placeholder="Type a message..."
             disabled={disabled}
-            className="w-full bg-slate-950/90 border border-slate-800/80 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 rounded-2xl px-4 py-[10px] text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none transition resize-none leading-6 min-h-[44px] max-h-[140px] block overflow-hidden custom-scrollbar"
+            className="w-full bg-slate-950/90 border border-slate-800/80 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 rounded-2xl px-4 py-[10px] text-base sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none transition resize-none leading-6 min-h-[44px] max-h-[140px] block overflow-hidden custom-scrollbar"
             style={{ height: "44px" }}
           />
         </div>

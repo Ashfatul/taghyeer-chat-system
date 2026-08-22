@@ -169,7 +169,7 @@ export default function AddMembersModal({
             placeholder="Search users to add..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-8 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition"
+            className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-8 py-2 text-base sm:text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition"
           />
           {searchQuery && (
             <button
