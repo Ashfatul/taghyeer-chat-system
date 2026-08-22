@@ -31,16 +31,16 @@ export default function FeatureSection() {
       >
         <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/25 text-indigo-400 text-xs font-semibold uppercase tracking-wider mb-2.5">
           <Flame className="w-3.5 h-3.5 text-indigo-400" />
-          Engineering Excellence
+          Core Features
         </div>
         <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-          Engineered for Performance. <br />
+          Real-Time Chat Features <br />
           <span className="bg-gradient-to-r from-indigo-400 to-violet-300 bg-clip-text text-transparent">
-            Designed for Human Focus.
+            Built for Clean UX
           </span>
         </h2>
         <p className="text-sm text-slate-400 mt-2.5 leading-relaxed">
-          Every layer of the Taghyeer Chat System is crafted with high-speed protocols, resilient caching, and ergonomic viewport physics.
+          A breakdown of the real-time messaging, group management, and optimistic caching built for the application.
         </p>
       </motion.div>
 
@@ -65,10 +65,10 @@ export default function FeatureSection() {
           </div>
 
           <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-400 font-mono">
-            Low-Latency Transport
+            Real-Time Transport
           </span>
           <h3 className="text-lg sm:text-xl font-bold text-white tracking-tight mt-1 mb-2.5">
-            Sub-Millisecond Real-Time WebSocket Pipeline
+            Real-Time WebSocket Messaging
           </h3>
           <p className="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-xl">
             Bidirectional message streaming over Socket.io v4 with instant optimistic local rendering. Outgoing messages appear with zero perceivable delay, seamlessly promoting from <code className="text-indigo-300 font-mono bg-indigo-500/10 px-1 rounded">sending</code> to <code className="text-emerald-300 font-mono bg-emerald-500/10 px-1 rounded">delivered</code> upon server confirmation.
@@ -130,10 +130,10 @@ export default function FeatureSection() {
             </div>
 
             <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-400 font-mono">
-              Team Governance
+              Group Management
             </span>
             <h3 className="text-lg sm:text-xl font-bold text-white tracking-tight mt-1 mb-2.5">
-              Multi-User Collaboration & Admin Roles
+              Multi-User Collaboration & Roles
             </h3>
             <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
               Create groups, invite members, promote administrators, and manage rosters with real-time <code className="text-emerald-300 font-mono bg-emerald-500/10 px-1 rounded">conversation:updated</code> broadcast synchronization.
@@ -158,10 +158,10 @@ export default function FeatureSection() {
           </div>
 
           <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-400 font-mono">
-            Ergonomic Physics
+            Smart Viewport
           </span>
           <h3 className="text-lg sm:text-xl font-bold text-white tracking-tight mt-1 mb-2.5">
-            Intelligent Viewport & Auto-Scroll Retention
+            Auto-Scroll & Reading Position Retention
           </h3>
           <p className="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-xl">
             Never lose your reading place when new messages arrive. If scrolled up reviewing history, auto-scrolling is gracefully paused, triggering an animated floating <code className="text-indigo-300 font-mono bg-indigo-500/10 px-1 rounded">[ ↓ New Messages ]</code> pill. Prepending older historical messages maintains exact pixel scroll offsets with zero visual jumping.

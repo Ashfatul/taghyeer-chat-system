@@ -99,10 +99,7 @@ export default function LandingFooter() {
         {/* Bottom Credits */}
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-3 font-mono">
           <div>© 2026 Taghyeer Chat System. Frontend Take-Home Project.</div>
-          <div className="flex items-center gap-1 text-slate-400">
-            <span>Engineered with precision and speed</span>
-            <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-          </div>
+          <div className="text-slate-400">Next.js 16 • React 19 • Socket.io</div>
         </div>
       </motion.div>
     </footer>
