@@ -134,7 +134,7 @@ export default function ChatSidebar({
       />
 
       {/* Sidebar Footer Indicator */}
-      <div className="p-2.5 border-t border-slate-800/80 bg-slate-950/60 text-center text-[10px] text-slate-500 font-mono flex items-center justify-between px-4">
+      <div className="p-2.5 border-t border-slate-800/80 bg-slate-950/60 text-center text-[10px] text-slate-500 font-mono flex items-center justify-between px-4 mt-auto shrink-0">
         <span className="flex items-center gap-1">
           <MessageSquare className="w-3 h-3 text-indigo-400" />
           {conversations.length} {conversations.length === 1 ? "chat" : "chats"}

@@ -72,12 +72,15 @@ export function matchUserScore(user: User, query: string): number {
     }
   }
 
-  // 5. Phone Matching (Full, Suffix, Substring, Formatted)
+  // 5. Phone Matching (Full, Prefix, Suffix, Substring, Formatted)
   if (qDigits.length >= 2) {
     if (phoneDigits === qDigits) {
       score = Math.max(score, 95);
+    } else if (phoneDigits.startsWith(qDigits)) {
+      // User typed prefix digits e.g. "+10000" or "10000" for "+100000000000"
+      score = Math.max(score, 90);
     } else if (phoneDigits.endsWith(qDigits)) {
-      // User typed the last 3-7 digits of phone (e.g. "0102" or "5550102")
+      // User typed the last digits of phone (e.g. "0102" or "5550102")
       score = Math.max(score, 85);
     } else if (phoneDigits.includes(qDigits)) {
       // Area code or middle segment match (e.g. "202" or "555")
@@ -120,7 +123,7 @@ export function filterAndRankUsers(users: User[], query: string): User[] {
 /**
  * Builds safe server query strings for MongoDB RegExp matching.
  * Prevents 500 crashes from unescaped "+" / metacharacters while supporting
- * case-insensitive wildcard searches.
+ * case-insensitive wildcard searches and capitalizations.
  */
 export function buildSafeServerSearchQueries(query: string): string[] {
   const trimmed = (query || "").trim();
@@ -133,15 +136,20 @@ export function buildSafeServerSearchQueries(query: string): string[] {
   if (tokens.length > 0) {
     const escapedPattern = tokens.map(escapeRegex).join(".*");
     queries.push(`(?i).*${escapedPattern}`);
+
+    // Also include Capitalized initial query for case-sensitive backend matching
+    const firstToken = tokens[0];
+    const capitalized = firstToken.charAt(0).toUpperCase() + firstToken.slice(1);
+    queries.push(capitalized);
   }
 
   // 2. Pure numeric phone query (without leading + to prevent regex 500 error)
   const digits = normalizePhoneDigits(trimmed);
-  if (digits && digits.length >= 3 && /^\d+$/.test(trimmed)) {
+  if (digits && digits.length >= 3) {
     queries.push(digits);
   }
 
-  return queries;
+  return Array.from(new Set(queries));
 }
 
 /**

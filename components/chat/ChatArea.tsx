@@ -59,6 +59,13 @@ export default function ChatArea({
         currentUserId={currentUserId}
         conversationId={conversation._id}
         isGroup={conversation.type === "group"}
+        participants={
+          conversation.type === "group"
+            ? conversation.participants
+            : conversation.participant
+            ? [conversation.participant]
+            : []
+        }
         isLoading={isLoading}
         hasMore={hasNextPage}
         isFetchingMore={isFetchingNextPage}

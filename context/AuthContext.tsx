@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { User, LoginPayload } from "@/lib/types";
 import { login as apiLogin, getMe as apiGetMe } from "@/lib/api/auth";
+import { warmupUserCache } from "@/lib/api/users";
 import { getStoredToken, setStoredToken } from "@/lib/api/client";
 import { initSocket, disconnectSocket } from "@/lib/socket/socket";
 
@@ -44,6 +45,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setUser(response.user);
           // Initialize real-time socket connection
           initSocket(storedToken);
+          // Prefetch user directory in background
+          warmupUserCache().catch(() => {});
         }
       } catch (err) {
         // Token invalid or expired
@@ -80,6 +83,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // Connect WebSocket
       initSocket(authToken);
+
+      // Prefetch user directory in background
+      warmupUserCache().catch(() => {});
 
       return authUser;
     } finally {

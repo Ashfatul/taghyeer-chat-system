@@ -6,7 +6,7 @@ import {
 } from "@/lib/utils/search";
 
 // Global in-memory user registry / cache for fast, resilient searches
-const globalUserCache = new Map<string, User>();
+export const globalUserCache = new Map<string, User>();
 let isWarmupRunning = false;
 let isWarmupComplete = false;
 
@@ -45,34 +45,36 @@ export function getCachedUsers(): User[] {
 }
 
 /**
- * Warms up the user cache by prefetching users from the server in the background.
- * Runs non-blocking and deduplicates concurrent runs.
+ * Warms up the user cache by prefetching users across uppercase alphabet and digits.
+ * Runs non-blocking in parallel chunks and deduplicates concurrent runs.
  */
 export async function warmupUserCache(): Promise<void> {
   if (isWarmupRunning || isWarmupComplete) return;
   isWarmupRunning = true;
 
   try {
-    const prefixes = ["a", "e", "i", "o", "u", "s", "m", "t", "0", "1"];
-    const promises = prefixes.map(async (char) => {
-      try {
-        const response = await apiClient<{ users?: User[]; data?: User[] } | User[]>(
-          "/users/search",
-          {
-            method: "GET",
-            params: { q: `(?i).*${char}` },
-          }
-        );
-        const users = Array.isArray(response)
-          ? response
-          : response.users || response.data || [];
-        registerUsers(users);
-      } catch {
-        // Silently continue if single prefix fails
-      }
-    });
-
-    await Promise.all(promises);
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split("");
+    const chunkSize = 6;
+    for (let i = 0; i < letters.length; i += chunkSize) {
+      const chunk = letters.slice(i, i + chunkSize);
+      await Promise.all(
+        chunk.map(async (char) => {
+          try {
+            const response = await apiClient<{ users?: User[]; data?: User[] } | User[]>(
+              "/users/search",
+              {
+                method: "GET",
+                params: { q: char },
+              }
+            );
+            const users = Array.isArray(response)
+              ? response
+              : response.users || response.data || [];
+            registerUsers(users);
+          } catch {}
+        })
+      );
+    }
     isWarmupComplete = true;
   } catch {
     // Ignore warmup errors
@@ -89,18 +91,13 @@ export async function searchUsers(query: string): Promise<User[]> {
   const trimmed = (query || "").trim();
   if (!trimmed) return [];
 
-  // 1. If cache is small or unprimed, trigger background warmup
-  if (globalUserCache.size < 20 && !isWarmupRunning && !isWarmupComplete) {
+  // 1. Trigger background directory warmup if not yet completed
+  if (!isWarmupComplete && !isWarmupRunning) {
     warmupUserCache().catch(() => {});
   }
 
   // 2. Build safe server queries (prevents MongoDB unescaped regex 500 crashes)
   const serverQueries = buildSafeServerSearchQueries(trimmed);
-
-  // If local cache is very small, also include a general wildcard
-  if (globalUserCache.size < 30) {
-    serverQueries.push("(?i).*");
-  }
 
   // 3. Dispatch safe server queries in parallel
   const queryPromises = serverQueries.map(async (q) => {

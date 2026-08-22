@@ -65,10 +65,15 @@ export function useConversations() {
           return oldData;
         }
 
+        const isFromMe = senderId === user?._id;
+        const currentUnread = oldData[conversationIndex].unreadCount || 0;
+        const newUnread = isFromMe ? 0 : currentUnread + 1;
+
         const updatedConversation: Conversation = {
           ...oldData[conversationIndex],
           lastMessage: updatedLastMessage,
           updatedAt: normalizedCreatedAt,
+          unreadCount: newUnread,
         };
 
         // Move active conversation to the top
@@ -100,6 +105,17 @@ export function useConversations() {
   }, [isAuthenticated, queryClient, user]);
 
   return query;
+}
+
+/**
+ * Helper to mark a specific conversation as read (clears unread badge in sidebar)
+ */
+export function markConversationAsRead(queryClient: ReturnType<typeof useQueryClient>, conversationId: string) {
+  queryClient.setQueryData<Conversation[]>(CONVERSATIONS_QUERY_KEY, (oldData = []) => {
+    return oldData.map((c) =>
+      c._id === conversationId ? { ...c, unreadCount: 0 } : c
+    );
+  });
 }
 
 export function useStartDirectConversation() {

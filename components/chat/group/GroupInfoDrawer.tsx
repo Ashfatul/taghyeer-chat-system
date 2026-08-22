@@ -188,7 +188,17 @@ export default function GroupInfoDrawer({
             <div className="flex items-center gap-1.5 text-[11px] text-slate-400 font-mono mt-1.5">
               <Calendar className="w-3 h-3 text-slate-500" />
               <span>
-                Created {format(new Date(conversation.createdAt), "MMMM d, yyyy")}
+                Created{" "}
+                {(() => {
+                  const rawDate = conversation.createdAt || conversation.updatedAt;
+                  if (!rawDate) return "Recently";
+                  try {
+                    const d = new Date(rawDate);
+                    return isNaN(d.getTime()) ? "Recently" : format(d, "MMMM d, yyyy");
+                  } catch {
+                    return "Recently";
+                  }
+                })()}
               </span>
             </div>
           </div>

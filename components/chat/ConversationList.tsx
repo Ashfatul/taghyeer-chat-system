@@ -34,8 +34,8 @@ export default function ConversationList({
   // Loading Skeleton State
   if (isLoading) {
     return (
-      <div className="p-2 space-y-2">
-        {[1, 2, 3, 4].map((n) => (
+      <div className="p-2 space-y-2 overflow-y-auto custom-scrollbar flex-1">
+        {[1, 2, 3, 4, 5, 6].map((n) => (
           <div
             key={n}
             className="p-3 rounded-2xl bg-slate-900/40 border border-slate-800/60 flex items-center gap-3 animate-pulse"
@@ -57,7 +57,7 @@ export default function ConversationList({
   // Empty Search Results State
   if (searchQuery.trim() && filteredConversations.length === 0) {
     return (
-      <div className="p-6 text-center flex flex-col items-center justify-center my-auto">
+      <div className="p-6 text-center flex flex-col items-center justify-center flex-1 my-auto">
         <div className="w-12 h-12 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-500 mb-3">
           <Search className="w-5 h-5" />
         </div>
@@ -72,7 +72,7 @@ export default function ConversationList({
   // Completely Empty Conversations State
   if (conversations.length === 0) {
     return (
-      <div className="p-6 text-center flex flex-col items-center justify-center my-auto">
+      <div className="p-6 text-center flex flex-col items-center justify-center flex-1 my-auto">
         <div className="w-14 h-14 rounded-3xl bg-gradient-to-tr from-indigo-600/20 to-violet-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 mb-4 shadow-lg shadow-indigo-500/10">
           <MessageSquarePlus className="w-6 h-6" />
         </div>

@@ -33,6 +33,7 @@ export interface DirectConversation {
   };
   updatedAt: string;
   createdAt?: string;
+  unreadCount?: number;
 }
 
 export interface GroupConversation {
@@ -48,7 +49,8 @@ export interface GroupConversation {
     createdAt?: string;
   };
   updatedAt: string;
-  createdAt: string;
+  createdAt?: string;
+  unreadCount?: number;
 }
 
 export type Conversation = DirectConversation | GroupConversation;

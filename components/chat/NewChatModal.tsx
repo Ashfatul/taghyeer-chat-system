@@ -41,6 +41,7 @@ export default function NewChatModal({
   const [groupName, setGroupName] = useState("");
   const [selectedParticipants, setSelectedParticipants] = useState<User[]>([]);
   const [modalError, setModalError] = useState<string | null>(null);
+  const [startingUserId, setStartingUserId] = useState<string | null>(null);
 
   const startDirectMutation = useStartDirectConversation();
   const createGroupMutation = useCreateGroupConversation();
@@ -53,6 +54,7 @@ export default function NewChatModal({
       setGroupName("");
       setSelectedParticipants([]);
       setModalError(null);
+      setStartingUserId(null);
       setActiveTab("direct");
     } else {
       warmupUserCache().catch(() => {});
@@ -106,12 +108,15 @@ export default function NewChatModal({
   // Handle Direct Message Selection
   const handleStartDirect = async (user: User) => {
     setModalError(null);
+    setStartingUserId(user._id);
     try {
       const conversation = await startDirectMutation.mutateAsync(user._id);
       onSelectConversation(conversation._id);
       onClose();
     } catch (err: any) {
       setModalError(err?.message || "Failed to start direct conversation");
+    } finally {
+      setStartingUserId(null);
     }
   };
 
@@ -231,7 +236,7 @@ export default function NewChatModal({
         {activeTab === "group" && (
           <div className="mb-3">
             <label className="block text-[11px] font-semibold text-slate-300 mb-1">
-              Group Subject / Name
+              Group Subject / Name <span className="text-rose-400 font-bold ml-0.5">*</span>
             </label>
             <input
               type="text"
@@ -239,6 +244,7 @@ export default function NewChatModal({
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}
               maxLength={40}
+              required
               className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition"
             />
 
@@ -315,11 +321,11 @@ export default function NewChatModal({
 
                     <button
                       onClick={() => handleStartDirect(user)}
-                      disabled={startDirectMutation.isPending}
-                      className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold transition active:scale-95 flex items-center gap-1 disabled:opacity-50"
+                      disabled={!!startingUserId}
+                      className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold transition active:scale-95 flex items-center justify-center gap-1 disabled:opacity-50 min-w-[56px]"
                     >
-                      {startDirectMutation.isPending ? (
-                        <Loader2 className="w-3 h-3 animate-spin" />
+                      {startingUserId === user._id ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
                       ) : (
                         <span>Chat</span>
                       )}

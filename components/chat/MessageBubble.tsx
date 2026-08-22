@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Message, User } from "@/lib/types";
 import { cn } from "@/lib/utils/cn";
 import { formatMessageTimestamp, hashToHsl } from "@/lib/utils/colors";
+import { globalUserCache } from "@/lib/api/users";
 import UserAvatar from "./UserAvatar";
 import { Check, CheckCheck, Clock, AlertCircle, Copy, Check as CopyCheck } from "lucide-react";
 
@@ -12,6 +13,7 @@ interface MessageBubbleProps {
   isMe: boolean;
   isGroup: boolean;
   showSender: boolean;
+  participants?: User[];
   onRetry?: (message: Message) => void;
 }
 
@@ -20,19 +22,29 @@ export default function MessageBubble({
   isMe,
   isGroup,
   showSender,
+  participants,
   onRetry,
 }: MessageBubbleProps) {
   const [copied, setCopied] = useState(false);
 
-  const senderName =
-    typeof message.sender === "string"
-      ? "Participant"
-      : message.sender?.name || "Participant";
+  let senderName = "Participant";
+  let senderId = "";
 
-  const senderId =
-    typeof message.sender === "string"
-      ? message.sender
-      : message.sender?._id || "";
+  if (typeof message.sender === "object" && message.sender !== null) {
+    senderName = message.sender.name || "Participant";
+    senderId = message.sender._id || "";
+  } else if (typeof message.sender === "string") {
+    senderId = message.sender;
+    const participantMatch = participants?.find((p) => p._id === senderId);
+    if (participantMatch?.name) {
+      senderName = participantMatch.name;
+    } else {
+      const cached = globalUserCache.get(senderId);
+      if (cached?.name) {
+        senderName = cached.name;
+      }
+    }
+  }
 
   const senderColors = hashToHsl(senderId || senderName);
   const timeFormatted = formatMessageTimestamp(message.createdAt);
@@ -124,16 +136,16 @@ export default function MessageBubble({
           </div>
         </div>
 
-        {/* Quick Hover Copy Action */}
+        {/* Quick Hover Copy Action: Vertically Centered with clean 10px spacing */}
         <button
           onClick={handleCopyText}
           title="Copy message"
           className={cn(
-            "absolute -top-3 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-md bg-slate-900/90 border border-slate-700 text-slate-400 hover:text-white text-[10px] shadow z-10",
-            isMe ? "left-0 -translate-x-full mr-1" : "right-0 translate-x-full ml-1"
+            "absolute top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-200 p-1.5 rounded-full bg-slate-900/95 border border-slate-700/80 text-slate-400 hover:text-white hover:bg-slate-800 shadow-md backdrop-blur-sm z-10 select-none",
+            isMe ? "right-[calc(100%+10px)]" : "left-[calc(100%+10px)]"
           )}
         >
-          {copied ? <CopyCheck className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+          {copied ? <CopyCheck className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
         </button>
       </div>
     </div>

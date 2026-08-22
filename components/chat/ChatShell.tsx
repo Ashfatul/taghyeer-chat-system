@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useConversations } from "@/hooks/useConversations";
+import { useConversations, markConversationAsRead } from "@/hooks/useConversations";
+import { useQueryClient } from "@tanstack/react-query";
 import ChatSidebar from "./ChatSidebar";
 import ChatArea from "./ChatArea";
 import GroupInfoDrawer from "./group/GroupInfoDrawer";
@@ -12,6 +13,7 @@ import { GroupConversation } from "@/lib/types";
 
 export default function ChatShell() {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const { data: conversations = [], isLoading } = useConversations();
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const [isNewChatModalOpen, setIsNewChatModalOpen] = useState(false);
@@ -25,16 +27,26 @@ export default function ChatShell() {
       typeof window !== "undefined" &&
       window.innerWidth >= 1024
     ) {
-      setActiveConversationId(conversations[0]._id);
+      const firstId = conversations[0]._id;
+      setActiveConversationId(firstId);
+      markConversationAsRead(queryClient, firstId);
     }
-  }, [conversations, activeConversationId]);
+  }, [conversations, activeConversationId, queryClient]);
+
+  // Clear unread badge whenever active conversation changes
+  useEffect(() => {
+    if (activeConversationId) {
+      markConversationAsRead(queryClient, activeConversationId);
+    }
+  }, [activeConversationId, queryClient]);
 
   const activeConversation = conversations.find((c) => c._id === activeConversationId);
 
-  // Close group drawer when switching conversations
+  // Close group drawer and clear unread badge when selecting conversations
   const handleSelectConversation = (id: string) => {
     setActiveConversationId(id);
     setIsGroupDrawerOpen(false);
+    markConversationAsRead(queryClient, id);
   };
 
   return (

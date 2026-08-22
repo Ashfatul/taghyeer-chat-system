@@ -54,6 +54,8 @@ export default function ConversationItem({
     conversation.lastMessage?.createdAt || conversation.updatedAt
   );
 
+  const hasUnread = !isActive && !!conversation.unreadCount && conversation.unreadCount > 0;
+
   return (
     <div
       role="button"
@@ -66,10 +68,12 @@ export default function ConversationItem({
         }
       }}
       className={cn(
-        "w-full p-3 rounded-2xl flex items-center gap-3 text-left transition-all cursor-pointer relative select-none group border border-transparent",
+        "w-full p-3 rounded-2xl flex items-center gap-3 text-left transition-all cursor-pointer relative select-none group border",
         isActive
           ? "bg-indigo-500/15 border-indigo-500/30 text-white shadow-sm"
-          : "hover:bg-slate-800/60 text-slate-300 hover:border-slate-800/80"
+          : hasUnread
+          ? "bg-slate-800/90 border-indigo-500/40 text-white shadow-sm shadow-indigo-500/10"
+          : "hover:bg-slate-800/60 border-transparent text-slate-300 hover:border-slate-800/80"
       )}
     >
       {/* Active Indicator Bar */}
@@ -77,14 +81,19 @@ export default function ConversationItem({
         <div className="absolute left-0 top-3 bottom-3 w-1 bg-indigo-500 rounded-r-full" />
       )}
 
-      {/* Avatar */}
-      <UserAvatar
-        name={avatarName}
-        userId={avatarUserId}
-        isGroup={isGroup}
-        participants={participants}
-        size="md"
-      />
+      {/* Avatar with unread indicator ring */}
+      <div className="relative shrink-0">
+        <UserAvatar
+          name={avatarName}
+          userId={avatarUserId}
+          isGroup={isGroup}
+          participants={participants}
+          size="md"
+        />
+        {hasUnread && (
+          <span className="absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full bg-indigo-500 border-2 border-slate-900 ring-2 ring-indigo-500/40 animate-pulse" />
+        )}
+      </div>
 
       {/* Content */}
       <div className="flex-1 min-w-0">
@@ -92,8 +101,12 @@ export default function ConversationItem({
           <div className="flex items-center gap-1.5 min-w-0">
             <span
               className={cn(
-                "text-xs font-bold truncate",
-                isActive ? "text-white" : "text-slate-200 group-hover:text-white"
+                "text-xs truncate",
+                isActive
+                  ? "text-white font-bold"
+                  : hasUnread
+                  ? "text-white font-extrabold"
+                  : "text-slate-200 font-bold group-hover:text-white"
               )}
             >
               {title}
@@ -110,7 +123,11 @@ export default function ConversationItem({
             <span
               className={cn(
                 "text-[10px] font-mono shrink-0",
-                isActive ? "text-indigo-300" : "text-slate-500"
+                isActive
+                  ? "text-indigo-300"
+                  : hasUnread
+                  ? "text-indigo-400 font-semibold"
+                  : "text-slate-500"
               )}
             >
               {timestamp}
@@ -118,15 +135,27 @@ export default function ConversationItem({
           )}
         </div>
 
-        {/* Last Message Snippet */}
-        <p
-          className={cn(
-            "text-[11px] truncate leading-relaxed",
-            isActive ? "text-indigo-200/90" : "text-slate-400 group-hover:text-slate-300"
+        {/* Last Message Snippet & Unread Badge */}
+        <div className="flex items-center justify-between gap-2">
+          <p
+            className={cn(
+              "text-[11px] truncate leading-relaxed flex-1",
+              isActive
+                ? "text-indigo-200/90"
+                : hasUnread
+                ? "text-slate-100 font-medium"
+                : "text-slate-400 group-hover:text-slate-300"
+            )}
+          >
+            {snippetText}
+          </p>
+
+          {hasUnread && (
+            <span className="px-1.5 py-0.5 rounded-full bg-gradient-to-r from-indigo-600 to-indigo-500 text-white text-[10px] font-bold shadow-md shadow-indigo-500/30 shrink-0 min-w-[18px] text-center">
+              {conversation.unreadCount}
+            </span>
           )}
-        >
-          {snippetText}
-        </p>
+        </div>
       </div>
     </div>
   );

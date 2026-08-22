@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Message } from "@/lib/types";
+import { Message, User } from "@/lib/types";
 import MessageBubble from "./MessageBubble";
 import ScrollToBottomButton from "./ScrollToBottomButton";
 import { useSmartScroll } from "@/hooks/useSmartScroll";
@@ -14,6 +14,7 @@ interface MessageListProps {
   currentUserId?: string;
   conversationId: string;
   isGroup: boolean;
+  participants?: User[];
   isLoading: boolean;
   hasMore?: boolean;
   isFetchingMore?: boolean;
@@ -26,6 +27,7 @@ export default function MessageList({
   currentUserId,
   conversationId,
   isGroup,
+  participants,
   isLoading,
   hasMore,
   isFetchingMore,
@@ -153,6 +155,7 @@ export default function MessageList({
                 isMe={isMe}
                 isGroup={isGroup}
                 showSender={showSender}
+                participants={participants}
                 onRetry={onRetryMessage}
               />
             </React.Fragment>
