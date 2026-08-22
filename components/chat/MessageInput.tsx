@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Send, Smile, Loader2 } from "lucide-react";
+import { Send, Smile } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
 interface MessageInputProps {
@@ -13,7 +13,6 @@ const QUICK_EMOJIS = ["👍", "❤️", "😂", "🎉", "🚀", "🔥", "✨", "
 
 export default function MessageInput({ onSendMessage, disabled = false }: MessageInputProps) {
   const [text, setText] = useState("");
-  const [isSending, setIsSending] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -44,25 +43,23 @@ export default function MessageInput({ onSendMessage, disabled = false }: Messag
     }
   }, [text]);
 
-  const handleSubmit = async (e?: React.FormEvent) => {
+  const handleSubmit = (e?: React.FormEvent | React.MouseEvent | React.TouchEvent) => {
     if (e) e.preventDefault();
 
     const trimmed = text.trim();
-    if (!trimmed || isSending || disabled) return;
+    if (!trimmed || disabled) return;
 
-    setIsSending(true);
-    try {
-      await onSendMessage(trimmed);
-      setText("");
-      if (textareaRef.current) {
-        textareaRef.current.style.height = "44px";
-        textareaRef.current.style.overflowY = "hidden";
-      }
-    } finally {
-      setIsSending(false);
-      // Keep focus on textarea for seamless conversational typing
-      textareaRef.current?.focus();
+    // Reset textarea height and text immediately for zero-latency UI response
+    setText("");
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "44px";
+      textareaRef.current.style.overflowY = "hidden";
+      // Ensure focus stays persistently on the textarea
+      textareaRef.current.focus();
     }
+
+    // Fire message send mutation (optimistic UI takes care of instant rendering)
+    onSendMessage(trimmed);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -93,6 +90,8 @@ export default function MessageInput({ onSendMessage, disabled = false }: Messag
             <button
               key={emoji}
               type="button"
+              onMouseDown={(e) => e.preventDefault()}
+              onTouchStart={(e) => e.preventDefault()}
               onClick={() => handleAddEmoji(emoji)}
               className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl hover:bg-slate-800 flex items-center justify-center text-sm sm:text-base hover:scale-110 transition active:scale-95 shrink-0"
             >
@@ -107,6 +106,8 @@ export default function MessageInput({ onSendMessage, disabled = false }: Messag
         {/* Emoji Toggle Button: exact 44px (h-11 w-11) */}
         <button
           type="button"
+          onMouseDown={(e) => e.preventDefault()}
+          onTouchStart={(e) => e.preventDefault()}
           onClick={() => setShowEmojiPicker((prev) => !prev)}
           title="Quick Emojis"
           className={cn(
@@ -135,20 +136,23 @@ export default function MessageInput({ onSendMessage, disabled = false }: Messag
           />
         </div>
 
-        {/* Send Button: exact 44px (h-11) */}
+        {/* Send Button: exact 44px (h-11) - keeps keyboard open without blur bounce */}
         <button
           type="submit"
-          disabled={!text.trim() || isSending || disabled}
+          onMouseDown={(e) => e.preventDefault()}
+          onTouchStart={(e) => {
+            // Prevent virtual keyboard dismiss on touch start
+            e.preventDefault();
+          }}
+          onTouchEnd={(e) => {
+            e.preventDefault();
+            handleSubmit();
+          }}
+          disabled={!text.trim() || disabled}
           className="h-11 px-4 sm:px-5 rounded-2xl bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-600 text-white font-semibold text-xs sm:text-sm shadow-md shadow-indigo-500/25 transition active:scale-95 disabled:opacity-35 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 shrink-0"
         >
-          {isSending ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <>
-              <span>Send</span>
-              <Send className="w-3.5 h-3.5" />
-            </>
-          )}
+          <span>Send</span>
+          <Send className="w-3.5 h-3.5" />
         </button>
       </form>
     </div>
