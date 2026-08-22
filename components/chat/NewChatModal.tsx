@@ -159,7 +159,7 @@ export default function NewChatModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/70 backdrop-blur-md transition-opacity"
@@ -167,9 +167,9 @@ export default function NewChatModal({
       />
 
       {/* Modal Card */}
-      <div className="relative w-full max-w-lg bg-slate-900/95 border border-slate-800 rounded-3xl p-6 shadow-2xl backdrop-blur-xl z-10 flex flex-col max-h-[85vh] overflow-hidden">
+      <div className="relative w-full max-w-lg bg-slate-900/95 border border-slate-800 rounded-3xl p-4 sm:p-6 shadow-2xl backdrop-blur-xl z-10 flex flex-col max-h-[92dvh] sm:max-h-[85vh] overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+        <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-slate-800">
           <div>
             <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-indigo-400" />

@@ -103,7 +103,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col justify-between bg-[#0B0F19] relative overflow-hidden px-4 py-8 selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen min-h-[100dvh] flex flex-col justify-between bg-[#0B0F19] relative overflow-hidden px-4 py-6 sm:py-8 selection:bg-indigo-500 selection:text-white">
       {/* Background Ambient Glows */}
       <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-indigo-600/15 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-violet-600/15 rounded-full blur-[140px] pointer-events-none" />
@@ -128,7 +128,8 @@ export default function LoginPage() {
           href="/"
           className="text-xs text-slate-400 hover:text-slate-200 transition font-medium px-3 py-1.5 rounded-lg hover:bg-slate-800/60 border border-transparent hover:border-slate-700/60"
         >
-          ← Back to Landing Page
+          <span className="hidden sm:inline">← Back to Landing Page</span>
+          <span className="sm:hidden">← Back</span>
         </Link>
       </header>
 

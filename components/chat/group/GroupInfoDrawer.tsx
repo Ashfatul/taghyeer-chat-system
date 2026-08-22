@@ -99,8 +99,14 @@ export default function GroupInfoDrawer({
 
   return (
     <>
+      {/* Mobile Backdrop Overlay */}
+      <div
+        className="md:hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-20 transition-opacity"
+        onClick={onClose}
+      />
+
       {/* Slide-over Container */}
-      <aside className="w-80 sm:w-96 bg-slate-900/95 border-l border-slate-800 flex flex-col h-full z-30 shadow-2xl backdrop-blur-xl overflow-hidden animate-slide-left select-none">
+      <aside className="fixed inset-y-0 right-0 z-30 w-full sm:w-96 md:relative md:inset-auto bg-slate-900/95 border-l border-slate-800 flex flex-col h-full shadow-2xl backdrop-blur-xl overflow-hidden animate-slide-left select-none">
         {/* Header */}
         <div className="p-4 border-b border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -109,7 +115,7 @@ export default function GroupInfoDrawer({
           </div>
           <button
             onClick={onClose}
-            className="w-7 h-7 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition"
+            className="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-400 hover:text-white flex items-center justify-center transition"
           >
             <X className="w-4 h-4" />
           </button>

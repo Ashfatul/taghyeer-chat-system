@@ -49,7 +49,7 @@ export default function ChatHeader({
         {onBack && (
           <button
             onClick={onBack}
-            className="md:hidden w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition shrink-0"
+            className="md:hidden w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-300 flex items-center justify-center transition shrink-0"
             title="Back to Conversations"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -66,7 +66,7 @@ export default function ChatHeader({
           isOnline={true}
         />
 
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <h2 className="text-xs sm:text-sm font-bold text-white tracking-tight truncate flex items-center gap-1.5">
             <span>{title}</span>
           </h2>
@@ -77,12 +77,12 @@ export default function ChatHeader({
       </div>
 
       {/* Right: Sound Toggle + Real-time Live Badge + Group Details Action */}
-      <div className="flex items-center gap-2 shrink-0">
+      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
         {/* Sound FX Mute/Unmute Toggle */}
         <button
           onClick={handleToggleSound}
           title={isMuted ? "Unmute sound effects" : "Mute sound effects"}
-          className="w-8 h-8 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition"
+          className="w-9 h-9 sm:w-8 sm:h-8 rounded-xl bg-slate-800/80 hover:bg-slate-700 active:scale-95 text-slate-400 hover:text-white flex items-center justify-center transition"
         >
           {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5 text-indigo-400" />}
         </button>
@@ -97,7 +97,7 @@ export default function ChatHeader({
         {isGroup && onToggleGroupInfo && (
           <button
             onClick={onToggleGroupInfo}
-            className="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700/80 text-xs font-semibold flex items-center gap-1.5 transition active:scale-95 shadow-sm"
+            className="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700/80 text-xs font-semibold flex items-center gap-1.5 transition active:scale-95 shadow-sm min-h-[36px]"
             title="View Group Details & Members"
           >
             <Info className="w-3.5 h-3.5 text-indigo-400" />

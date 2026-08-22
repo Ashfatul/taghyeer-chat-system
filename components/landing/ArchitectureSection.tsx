@@ -230,10 +230,10 @@ export default function ArchitectureSection() {
             </div>
 
             {/* Right Column: Payload & Response Viewer */}
-            <div className="lg:col-span-7 bg-slate-950 rounded-2xl border border-slate-800 p-5 flex flex-col justify-between">
+            <div className="lg:col-span-7 bg-slate-950 rounded-2xl border border-slate-800 p-4 sm:p-5 flex flex-col justify-between">
               <div>
-                <div className="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
-                  <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-800 mb-4">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-xs font-bold text-white font-mono">
                       {selectedEndpoint.method} {selectedEndpoint.path}
                     </span>
@@ -244,7 +244,7 @@ export default function ArchitectureSection() {
 
                   <button
                     onClick={() => handleCopy(selectedEndpoint.response)}
-                    className="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white transition text-xs flex items-center gap-1 font-mono"
+                    className="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white transition text-xs flex items-center gap-1 font-mono active:scale-95"
                     title="Copy response JSON"
                   >
                     {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}

@@ -50,19 +50,19 @@ export default function ChatShell() {
   };
 
   return (
-    <div className="h-screen w-full bg-[#0B0F19] text-slate-100 flex overflow-hidden">
+    <div className="h-screen h-[100dvh] w-full bg-[#0B0F19] text-slate-100 flex overflow-hidden">
       {/* Left Sidebar (visible on mobile if no conversation is selected, always visible on tablet/desktop) */}
       <ChatSidebar
         conversations={conversations}
         activeId={activeConversationId}
         isLoading={isLoading}
         onSelectConversation={handleSelectConversation}
-        className={activeConversationId ? "hidden md:flex" : "flex"}
+        className={activeConversationId ? "hidden md:flex" : "flex w-full md:w-80 lg:w-96 shrink-0"}
       />
 
       {/* Center Main Chat Panel Area */}
       <main
-        className={`flex-1 flex flex-col h-full bg-[#0B0F19] relative ${
+        className={`flex-1 flex flex-col h-full bg-[#0B0F19] relative min-w-0 overflow-hidden ${
           !activeConversationId ? "hidden md:flex" : "flex"
         }`}
       >
