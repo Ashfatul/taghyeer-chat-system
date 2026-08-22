@@ -4,7 +4,8 @@
 > **Target Base URL (REST):** `https://frontend-task-chatapp.onrender.com/api`  
 > **Root Origin (Health & WebSocket):** `https://frontend-task-chatapp.onrender.com`  
 > **Protocol:** RESTful HTTPS + WebSocket (Socket.io v4)  
-> **Authentication:** Bearer JWT (JSON Web Token)
+> **Authentication:** Bearer JWT (JSON Web Token)  
+> **Export Formats:** 📮 [`docs/postman_collection.json`](./postman_collection.json) \| 📜 [`docs/swagger.json`](./swagger.json)
 
 ---
 

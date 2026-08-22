@@ -4,6 +4,8 @@
 
 🌐 **Live Deployment:** [https://taghyeer-chat-system.vercel.app/](https://taghyeer-chat-system.vercel.app/)  
 📖 **API Specification:** [`docs/api-documentation.md`](./docs/api-documentation.md)  
+📮 **Postman Collection:** [`docs/postman_collection.json`](./docs/postman_collection.json)  
+📜 **Swagger / OpenAPI 3.0 Spec:** [`docs/swagger.json`](./docs/swagger.json)  
 🧠 **Technical Thought Process:** [`docs/thought-process.md`](./docs/thought-process.md)  
 ✅ **Tasks & Requirements Checklist:** [`docs/tasks-checklist.md`](./docs/tasks-checklist.md)  
 

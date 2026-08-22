@@ -1,0 +1,466 @@
+{
+  "info": {
+    "_postman_id": "taghyeer-chat-system-api-v1",
+    "name": "Taghyeer Chat System API",
+    "description": "Complete Postman collection for the Taghyeer Real-Time Chat System REST API and Socket.io gateway.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://frontend-task-chatapp.onrender.com",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "conversationId",
+      "value": "6a8833e7e5d6aac97521f010",
+      "type": "string"
+    },
+    {
+      "key": "participantUserId",
+      "value": "6a8833dfe5d6aac97521f00e",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. System",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            },
+            "description": "Check if the server and MongoDB database are healthy."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Auth",
+      "item": [
+        {
+          "name": "Passwordless Login / Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.token) {",
+                  "    pm.collectionVariables.set('authToken', jsonData.token);",
+                  "    console.log('authToken updated successfully: ' + jsonData.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+12025550101\",\n  \"name\": \"Sarah Connor\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Passwordless login and auto-registration. If phone number is new, user is provisioned automatically."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Current User Profile (/me)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ]
+            },
+            "description": "Validate current JWT token and retrieve logged-in user profile."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. Users",
+      "item": [
+        {
+          "name": "Search Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/search?q=Sarah",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "users",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "Sarah",
+                  "description": "Search term (name or phone number, regex special chars sanitized)"
+                }
+              ]
+            },
+            "description": "Search registered users in the database by name or phone."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. Conversations",
+      "item": [
+        {
+          "name": "List Conversations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/conversations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "conversations"
+              ]
+            },
+            "description": "Retrieve all active direct and group conversations for the authenticated user."
+          },
+          "response": []
+        },
+        {
+          "name": "Create / Get 1-on-1 Direct Chat",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"participantId\": \"{{participantUserId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/conversations/direct",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "conversations",
+                "direct"
+              ]
+            },
+            "description": "Create or retrieve an existing 1-on-1 conversation with another user."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Group Conversation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Engineering Core\",\n  \"participantIds\": [\n    \"6a8833dfe5d6aac97521f00e\",\n    \"6a8833e0e5d6aac97521f00f\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/conversations/group",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "conversations",
+                "group"
+              ]
+            },
+            "description": "Create a new multi-participant group conversation. Creator is assigned as admin."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "5. Messages",
+      "item": [
+        {
+          "name": "Get Conversation Messages (Paginated)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/messages?conversationId={{conversationId}}&limit=30",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "messages"
+              ],
+              "query": [
+                {
+                  "key": "conversationId",
+                  "value": "{{conversationId}}",
+                  "description": "Target conversation ObjectId"
+                },
+                {
+                  "key": "limit",
+                  "value": "30",
+                  "description": "Number of messages per page (max 50)"
+                },
+                {
+                  "key": "before",
+                  "value": "2026-08-21T10:30:00.000Z",
+                  "disabled": true,
+                  "description": "Cursor timestamp for fetching older messages"
+                }
+              ]
+            },
+            "description": "Retrieve paginated message history for a conversation in reverse chronological order."
+          },
+          "response": []
+        },
+        {
+          "name": "Send Message (REST Fallback)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"conversationId\": \"{{conversationId}}\",\n  \"text\": \"Hello from Postman!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/messages",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "messages"
+              ]
+            },
+            "description": "Send a new message to a conversation. Server broadcasts message:new over WebSockets."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "6. Group Management",
+      "item": [
+        {
+          "name": "Rename Group",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Product & Engineering Squad\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/conversations/{{conversationId}}/name",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "conversations",
+                "{{conversationId}}",
+                "name"
+              ]
+            },
+            "description": "Rename an existing group conversation (Admin only)."
+          },
+          "response": []
+        },
+        {
+          "name": "Add Group Participants",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"participantIds\": [\n    \"6a8833dfe5d6aac97521f00e\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/conversations/{{conversationId}}/participants",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "conversations",
+                "{{conversationId}}",
+                "participants"
+              ]
+            },
+            "description": "Add new users into an existing group conversation (Admin only)."
+          },
+          "response": []
+        },
+        {
+          "name": "Remove Group Participant",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/conversations/{{conversationId}}/participants/{{participantUserId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "conversations",
+                "{{conversationId}}",
+                "participants",
+                "{{participantUserId}}"
+              ]
+            },
+            "description": "Remove a member from a group (Admin only)."
+          },
+          "response": []
+        },
+        {
+          "name": "Leave Group",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/conversations/{{conversationId}}/leave",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "conversations",
+                "{{conversationId}}",
+                "leave"
+              ]
+            },
+            "description": "Self-remove the authenticated user from a group conversation."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

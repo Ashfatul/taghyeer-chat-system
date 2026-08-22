@@ -1,0 +1,800 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Taghyeer Chat System API",
+    "description": "Production RESTful API and WebSocket specifications for the Taghyeer Real-Time Chat System.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Taghyeer Engineering",
+      "url": "https://taghyeer-chat-system.vercel.app/"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://frontend-task-chatapp.onrender.com",
+      "description": "Production Render Backend"
+    },
+    {
+      "url": "http://localhost:3000",
+      "description": "Local Next.js Proxy Environment"
+    }
+  ],
+  "tags": [
+    {
+      "name": "System",
+      "description": "Health check and system endpoints"
+    },
+    {
+      "name": "Auth",
+      "description": "Passwordless authentication and session validation"
+    },
+    {
+      "name": "Users",
+      "description": "User search and directory retrieval"
+    },
+    {
+      "name": "Conversations",
+      "description": "1-on-1 and Group conversation lifecycle"
+    },
+    {
+      "name": "Messages",
+      "description": "Message history and dispatching"
+    },
+    {
+      "name": "Group Management",
+      "description": "Admin group governance and participant controls"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "System"
+        ],
+        "summary": "System Health Check",
+        "description": "Returns the health status of the server and database connection.",
+        "responses": {
+          "200": {
+            "description": "Server is online and healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "ok"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "example": "2026-08-21T10:00:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Passwordless Login / Registration",
+        "description": "Authenticate or automatically provision a user using phone number and name.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "phone",
+                  "name"
+                ],
+                "properties": {
+                  "phone": {
+                    "type": "string",
+                    "example": "+12025550101",
+                    "description": "User phone number with country code"
+                  },
+                  "name": {
+                    "type": "string",
+                    "example": "Sarah Connor",
+                    "description": "User display name"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Authentication successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    },
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid phone number or name",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Get Current Authenticated User",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Session is valid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token invalid or expired",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/search": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Search Users by Name or Phone",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Search keyword (sanitized for regex characters)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Matching users array",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/conversations": {
+      "get": {
+        "tags": [
+          "Conversations"
+        ],
+        "summary": "List Active Conversations",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of direct and group conversations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Conversation"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/conversations/direct": {
+      "post": {
+        "tags": [
+          "Conversations"
+        ],
+        "summary": "Create or Retrieve 1-on-1 Direct Chat",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "participantId"
+                ],
+                "properties": {
+                  "participantId": {
+                    "type": "string",
+                    "example": "6a8833dfe5d6aac97521f00e"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Conversation created or retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Conversation"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/conversations/group": {
+      "post": {
+        "tags": [
+          "Conversations"
+        ],
+        "summary": "Create Multi-User Group Conversation",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "participantIds"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Engineering Core"
+                  },
+                  "participantIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": [
+                      "6a8833dfe5d6aac97521f00e",
+                      "6a8833e0e5d6aac97521f00f"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Group created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Conversation"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/messages": {
+      "get": {
+        "tags": [
+          "Messages"
+        ],
+        "summary": "Get Paginated Conversation Messages",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "conversationId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Target conversation ObjectID"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 30
+            },
+            "description": "Number of messages per page"
+          },
+          {
+            "name": "before",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Cursor timestamp for fetching older messages"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Messages list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Message"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Messages"
+        ],
+        "summary": "Send Message (REST Fallback)",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "conversationId",
+                  "text"
+                ],
+                "properties": {
+                  "conversationId": {
+                    "type": "string",
+                    "example": "6a8833e7e5d6aac97521f010"
+                  },
+                  "text": {
+                    "type": "string",
+                    "example": "Hello team!"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Message dispatched and saved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/conversations/{id}/name": {
+      "put": {
+        "tags": [
+          "Group Management"
+        ],
+        "summary": "Rename Group Conversation",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Group Conversation ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Product & Design Squad"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Group renamed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Conversation"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/conversations/{id}/participants": {
+      "post": {
+        "tags": [
+          "Group Management"
+        ],
+        "summary": "Add Group Participants",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "participantIds"
+                ],
+                "properties": {
+                  "participantIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": [
+                      "6a8833dfe5d6aac97521f00e"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Participants added",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Conversation"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/conversations/{id}/participants/{userId}": {
+      "delete": {
+        "tags": [
+          "Group Management"
+        ],
+        "summary": "Remove Group Participant",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Participant removed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Conversation"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/conversations/{id}/leave": {
+      "post": {
+        "tags": [
+          "Group Management"
+        ],
+        "summary": "Leave Group Conversation",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully left group",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "6a8833d9e5d6aac97521f00d"
+          },
+          "name": {
+            "type": "string",
+            "example": "Sarah Connor"
+          },
+          "phone": {
+            "type": "string",
+            "example": "+12025550101"
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2026-08-21T10:00:00.000Z"
+          }
+        }
+      },
+      "Conversation": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "6a8833e7e5d6aac97521f010"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "direct",
+              "group"
+            ],
+            "example": "group"
+          },
+          "name": {
+            "type": "string",
+            "example": "Engineering Core"
+          },
+          "createdBy": {
+            "type": "string",
+            "example": "6a8833d9e5d6aac97521f00d"
+          },
+          "admins": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "6a8833d9e5d6aac97521f00d"
+            ]
+          },
+          "participants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/User"
+            }
+          },
+          "lastMessage": {
+            "type": "object",
+            "properties": {
+              "text": {
+                "type": "string",
+                "example": "Sounds good!"
+              },
+              "sender": {
+                "type": "string",
+                "example": "6a8833dfe5d6aac97521f00e"
+              },
+              "createdAt": {
+                "type": "string",
+                "example": "2026-08-21T10:34:00Z"
+              }
+            }
+          },
+          "unreadCount": {
+            "type": "integer",
+            "example": 0
+          },
+          "updatedAt": {
+            "type": "string",
+            "example": "2026-08-21T10:34:00Z"
+          }
+        }
+      },
+      "Message": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "example": "6a883401e5d6aac97521f014"
+          },
+          "conversation": {
+            "type": "string",
+            "example": "6a8833e7e5d6aac97521f010"
+          },
+          "sender": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string",
+                "example": "6a8833d9e5d6aac97521f00d"
+              },
+              "name": {
+                "type": "string",
+                "example": "Sarah Connor"
+              }
+            }
+          },
+          "text": {
+            "type": "string",
+            "example": "Hello from Sarah!"
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2026-08-21T10:34:05.120Z"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Invalid credentials or missing parameter."
+          },
+          "statusCode": {
+            "type": "integer",
+            "example": 400
+          }
+        }
+      }
+    }
+  }
+}
