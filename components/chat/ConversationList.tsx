@@ -4,6 +4,7 @@ import React, { useMemo } from "react";
 import { Conversation } from "@/lib/types";
 import ConversationItem from "./ConversationItem";
 import { MessageSquarePlus, Search } from "lucide-react";
+import { matchConversation } from "@/lib/utils/search";
 
 interface ConversationListProps {
   conversations: Conversation[];
@@ -24,21 +25,10 @@ export default function ConversationList({
   onSelectConversation,
   onOpenNewChatModal,
 }: ConversationListProps) {
-  // Filter conversations based on client-side search query
+  // Filter conversations based on client-side search query (name, phone, partial digits, message snippets)
   const filteredConversations = useMemo(() => {
     if (!searchQuery.trim()) return conversations;
-    const q = searchQuery.toLowerCase().trim();
-
-    return conversations.filter((conv) => {
-      const title =
-        conv.type === "group"
-          ? conv.name?.toLowerCase() || ""
-          : conv.participant?.name?.toLowerCase() || "";
-      const lastMsg = conv.lastMessage?.text?.toLowerCase() || "";
-      const phone = conv.type === "direct" ? conv.participant?.phone || "" : "";
-
-      return title.includes(q) || lastMsg.includes(q) || phone.includes(q);
-    });
+    return conversations.filter((conv) => matchConversation(conv, searchQuery));
   }, [conversations, searchQuery]);
 
   // Loading Skeleton State

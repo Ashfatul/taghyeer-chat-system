@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { User } from "@/lib/types";
-import { searchUsers } from "@/lib/api/users";
+import { searchUsers, warmupUserCache } from "@/lib/api/users";
 import { useStartDirectConversation, useCreateGroupConversation } from "@/hooks/useConversations";
+import { useDebounce } from "@/hooks/useDebounce";
 import UserAvatar from "./UserAvatar";
 import { formatPhoneNumber } from "@/lib/utils/colors";
 import {
@@ -34,6 +35,7 @@ export default function NewChatModal({
 }: NewChatModalProps) {
   const [activeTab, setActiveTab] = useState<"direct" | "group">("direct");
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
   const [searchResults, setSearchResults] = useState<User[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [groupName, setGroupName] = useState("");
@@ -43,7 +45,7 @@ export default function NewChatModal({
   const startDirectMutation = useStartDirectConversation();
   const createGroupMutation = useCreateGroupConversation();
 
-  // Reset state when opening/closing
+  // Reset state when opening/closing and warmup user directory
   useEffect(() => {
     if (!isOpen) {
       setSearchQuery("");
@@ -52,33 +54,43 @@ export default function NewChatModal({
       setSelectedParticipants([]);
       setModalError(null);
       setActiveTab("direct");
+    } else {
+      warmupUserCache().catch(() => {});
     }
   }, [isOpen]);
 
-  // Debounced user search
+  // Debounced user search with cancellation safety
   useEffect(() => {
-    if (!searchQuery.trim()) {
+    const trimmed = debouncedSearchQuery.trim();
+    if (!trimmed) {
       setSearchResults([]);
       setIsSearching(false);
       return;
     }
 
+    let isCurrent = true;
     setIsSearching(true);
-    const timer = setTimeout(async () => {
-      try {
-        const results = await searchUsers(searchQuery);
-        // Exclude current user from search results
+
+    searchUsers(trimmed)
+      .then((results) => {
+        if (!isCurrent) return;
         const filtered = results.filter((u) => u._id !== currentUserId);
         setSearchResults(filtered);
-      } catch (err: any) {
+      })
+      .catch(() => {
+        if (!isCurrent) return;
         setSearchResults([]);
-      } finally {
-        setIsSearching(false);
-      }
-    }, 300);
+      })
+      .finally(() => {
+        if (isCurrent) {
+          setIsSearching(false);
+        }
+      });
 
-    return () => clearTimeout(timer);
-  }, [searchQuery, currentUserId]);
+    return () => {
+      isCurrent = false;
+    };
+  }, [debouncedSearchQuery, currentUserId]);
 
   // Close on Escape key
   useEffect(() => {

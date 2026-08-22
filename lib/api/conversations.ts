@@ -11,16 +11,20 @@ import {
   Message,
 } from "@/lib/types";
 
+import { registerConversationUsers } from "./users";
+
 export async function getConversations(): Promise<Conversation[]> {
   const response = await apiClient<Conversation[] | { data?: Conversation[]; conversations?: Conversation[] }>(
     "/conversations",
     { method: "GET" }
   );
 
-  if (Array.isArray(response)) {
-    return response;
-  }
-  return response.data || response.conversations || [];
+  const list = Array.isArray(response)
+    ? response
+    : response.data || response.conversations || [];
+
+  registerConversationUsers(list);
+  return list;
 }
 
 export async function startDirectConversation(userId: string): Promise<DirectConversation> {

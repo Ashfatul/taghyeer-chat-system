@@ -50,6 +50,22 @@ One of the most frustrating flaws in chat interfaces is being forced to the bott
 ### 2.4 Interactive In-Browser Live Chat Simulator
 For Part 2 (Creative Showcase), rather than presenting static screenshots, we built an **Interactive In-Browser Live Chat Simulator** embedded directly in the landing page (`/`). Evaluators can switch between Direct and Group personas, send messages, trigger simulated inbound replies, test typing indicators, and observe smart scroll locks in action before logging in.
 
+### 2.5 Debounced Search, Multi-Token Matching & Hybrid User Directory Architecture (`useDebounce`, `lib/utils/search.ts`)
+Searching for contacts and active conversations is central to a seamless messaging experience. We implemented a unified search engine with debouncing and multi-layer query resolution:
+1. **Custom `useDebounce` Hook**:
+   - **User Search (New Chat & Add Members Modals)**: Applies a 300ms debounce to prevent firing network requests on every keystroke.
+   - **Conversation List Search (Sidebar)**: Applies a 200ms debounce to avoid recomputing filter algorithms over active chat lists during rapid typing.
+   - **Asynchronous Cancellation Safety**: Search effects include cancellation flags (`let isCurrent = true; ... return () => { isCurrent = false; }`) to guarantee that delayed responses from older searches never overwrite fresh results.
+2. **Multi-Token, Case-Insensitive Matching**:
+   - Matches full names, first names, last names, substring tokens, and multi-word queries (e.g. searching `"sar con"` resolves to `"Sarah Connor"`).
+   - In MongoDB, queries are safely formatted with embedded case-insensitive flags (`(?i).*token1.*token2`) to bypass backend case-sensitive prefix limitations.
+3. **Universal Phone Number Normalization & Partial Digit Matching**:
+   - Cleans formatting symbols to match phone numbers regardless of country code (`+`), parentheses, dashes, or spaces (e.g. `+1 (202) 555-0102`, `202-555-0102`, `12025550102`).
+   - Supports partial digit queries (e.g. searching last 4 digits `0102`, area code `202`, or middle segment `555`).
+4. **Hybrid In-Memory Directory with Live Server Fallback**:
+   - Automatically indexes users from existing conversations, auth sessions, and background warmups into `globalUserCache`.
+   - Executes instant 0ms in-memory lookups while concurrently dispatching safe server queries, merging and scoring candidates by relevance (Exact match: 100, Prefix match: 90, Word token match: 80-85, Substring/Phone match: 75).
+
 ---
 
 ## 3. AI Tool Usage Declaration
@@ -66,15 +82,20 @@ For Part 2 (Creative Showcase), rather than presenting static screenshots, we bu
 ### 3.3 What Was Changed, Rejected, or Handled Manually
 - **Rejected Simple `useEffect` State Polling**: AI drafts initially suggested fetching messages on a polling interval. This was rejected in favor of an event-driven architecture uniting TanStack Query v5 cache synchronization with Socket.io real-time broadcast listeners.
 - **Custom Viewport Scroll Physics**: Default AI recommendations used standard `element.scrollIntoView()`, which broke historical scroll positions when prepending cursor pages. We engineered a custom `useSmartScroll` hook with pixel offset retention.
-- **MongoDB RegExp Vulnerability Patch**: AI drafts passed raw search strings into `/api/users/search?q=...`. During live API inspection, queries with `+` crashed the backend with MongoDB 500 errors. We wrote a dedicated `sanitizeSearchQuery` utility to escape all regex metacharacters.
+- **MongoDB RegExp Vulnerability Patch & Advanced Search Architecture**: AI drafts passed raw search strings into `/api/users/search?q=...`. During live API inspection, queries with `+` crashed the backend with MongoDB 500 errors. We engineered a dedicated `search.ts` engine with safe query construction, phone normalization, in-memory caching, and debouncing.
 
 ---
 
 ## 4. Issues Ran Into & API Quirks Encountered
 
-### 4.1 MongoDB Regex Search 500 Error
-- **Issue**: Searching for phone numbers with a leading `+` (e.g. `+12025550101`) or names with regex characters caused the server endpoint `GET /api/users/search?q=...` to crash with HTTP 500 (`MongoServerError: Regular expression is invalid`).
-- **Solution**: Implemented `sanitizeSearchQuery(query)` in `lib/utils/colors.ts`, stripping leading `+` and escaping characters `[.*+?^${}()|[\]\\]` before sending API requests.
+### 4.1 MongoDB Regex Search 500 Error & Exact Phone Matching
+- **Issue**:
+  1. Searching for phone numbers with a leading `+` (e.g. `+12025550101`) or names with regex characters caused the server endpoint `GET /api/users/search?q=...` to crash with HTTP 500 (`MongoServerError: Regular expression is invalid: quantifier does not follow a repeatable item`).
+  2. The server backend evaluated `phone: q` with strict equality and `name` with case-sensitive prefix regex, failing to return users when searching lowercase names, formatted phones, or partial phone digits.
+- **Solution**:
+  1. Created `lib/utils/search.ts` with `buildSafeServerSearchQueries`, converting queries to safe escaped expressions with `(?i).*` flags and stripping unescaped leading `+` from regex parameters.
+  2. Implemented `useDebounce` to throttle search inputs.
+  3. Created an in-memory user registry (`globalUserCache`) in `lib/api/users.ts` with background warmups, enabling instant partial phone and name matching across all formats.
 
 ### 4.2 Endpoint vs WebSocket Origin Discrepancy
 - **Issue**: REST endpoints reside under the `/api/*` sub-path (e.g. `https://frontend-task-chatapp.onrender.com/api/conversations`), while the Socket.io WebSocket gateway and health endpoint reside at the root domain (`https://frontend-task-chatapp.onrender.com`).

@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Conversation } from "@/lib/types";
+import { useDebounce } from "@/hooks/useDebounce";
 import UserAvatar from "./UserAvatar";
 import ConversationList from "./ConversationList";
 import NewChatModal from "./NewChatModal";
@@ -35,6 +36,7 @@ export default function ChatSidebar({
   const router = useRouter();
   const { user, logout } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 200);
   const [isNewChatModalOpen, setIsNewChatModalOpen] = useState(false);
 
   const handleLogout = () => {
@@ -126,7 +128,7 @@ export default function ChatSidebar({
         activeId={activeId}
         currentUserId={user?._id}
         isLoading={isLoading}
-        searchQuery={searchQuery}
+        searchQuery={debouncedSearchQuery}
         onSelectConversation={onSelectConversation}
         onOpenNewChatModal={() => setIsNewChatModalOpen(true)}
       />

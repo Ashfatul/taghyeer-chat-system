@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import { User } from "@/lib/types";
-import { searchUsers } from "@/lib/api/users";
+import { searchUsers, warmupUserCache } from "@/lib/api/users";
 import { useGroupMutations } from "@/hooks/useGroupMutations";
+import { useDebounce } from "@/hooks/useDebounce";
 import UserAvatar from "../UserAvatar";
 import { formatPhoneNumber } from "@/lib/utils/colors";
 import { X, Search, UserPlus, Loader2, Check, AlertCircle } from "lucide-react";
@@ -23,6 +24,7 @@ export default function AddMembersModal({
   existingParticipantIds,
 }: AddMembersModalProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
   const [searchResults, setSearchResults] = useState<User[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -36,35 +38,45 @@ export default function AddMembersModal({
       setSearchResults([]);
       setSelectedUsers([]);
       setError(null);
+    } else {
+      warmupUserCache().catch(() => {});
     }
   }, [isOpen]);
 
-  // Debounced user search
+  // Debounced user search with cancellation safety
   useEffect(() => {
-    if (!searchQuery.trim()) {
+    const trimmed = debouncedSearchQuery.trim();
+    if (!trimmed) {
       setSearchResults([]);
       setIsSearching(false);
       return;
     }
 
+    let isCurrent = true;
     setIsSearching(true);
-    const timer = setTimeout(async () => {
-      try {
-        const results = await searchUsers(searchQuery);
-        // Filter out users already in the group
+
+    searchUsers(trimmed)
+      .then((results) => {
+        if (!isCurrent) return;
         const filtered = results.filter(
           (u) => !existingParticipantIds.includes(u._id)
         );
         setSearchResults(filtered);
-      } catch {
+      })
+      .catch(() => {
+        if (!isCurrent) return;
         setSearchResults([]);
-      } finally {
-        setIsSearching(false);
-      }
-    }, 300);
+      })
+      .finally(() => {
+        if (isCurrent) {
+          setIsSearching(false);
+        }
+      });
 
-    return () => clearTimeout(timer);
-  }, [searchQuery, existingParticipantIds]);
+    return () => {
+      isCurrent = false;
+    };
+  }, [debouncedSearchQuery, existingParticipantIds]);
 
   const toggleUserSelection = (user: User) => {
     setSelectedUsers((prev) => {
