@@ -322,9 +322,11 @@ Authorization: Bearer <token>
 ]
 ```
 
-> **Warning (Backend Regex Caveat):**  
-> 1. Special regex characters like `+` (e.g. `q=+1202...`) trigger a server-side MongoDB 500 error if not sanitized on the client. Strip leading `+` or sanitize before dispatching query.  
-> 2. The search performs a case-sensitive prefix match.
+> **Warning (Backend Regex & Query Caveats):**  
+> 1. **Regex Crash on `+`**: Special regex characters like a leading `+` (e.g. `q=+1202...`) are passed directly into MongoDB `new RegExp(...)` without sanitization on the server, triggering error code `51091` (`500 Internal Server Error: quantifier does not follow a repeatable item`).  
+> 2. **Exact String Match on `phone`**: The backend executes `{ phone: req.query.q }` as a strict equality check. Partial phone searches on the API (such as `10000` for `+100000000000`) will return `0` results from the server.  
+> 3. **Case Sensitivity on `name`**: Name regex searches are case-sensitive (e.g. searching lowercase `w` does not match names starting with uppercase `W` like `Whatever`).  
+> 4. **Client Workaround**: The frontend implements a background directory index across uppercase alphabet chunks (`A-Z`, `0-9`) combined with sanitized multi-variant server queries and client-side scoring for 100% accurate recall on partial names and phone numbers.
 
 ---
 
@@ -484,7 +486,9 @@ Authorization: Bearer <token>
 }
 ```
 
-> **Client Requirement:** Empty strings and whitespace-only messages must be rejected on the client before dispatch.
+> **Client Notes & Backend Schema Limitations:**  
+> 1. **Empty Message Validation:** Empty strings and whitespace-only messages must be rejected on the client before dispatch (`text.trim().length > 0`).  
+> 2. **No Message Reply/Quote Support:** The backend MongoDB `Message` schema strictly stores `{ _id, conversation, sender, text, createdAt }`. Any reply fields (`replyTo`, `parentMessageId`, etc.) passed to `POST /api/messages` are ignored and discarded by the server.
 
 ---
 
@@ -685,8 +689,10 @@ During end-to-end testing against the live deployment, several critical API beha
 | Behavior / Quirk | Observed Server Behavior | Client-Side Workaround / Handling |
 | :--- | :--- | :--- |
 | **Health Check Route** | `GET /api/health` returns `404 Not Found`. `GET /health` at root returns `200 OK`. | Route health checks to root `/health` rather than the `/api` prefix. |
-| **User Search Regex Vulnerability** | Searching with `+` in `q` (e.g. `+1202...`) crashes MongoDB with error code `51091` (`500 Internal Server Error`). | Sanitize query string on client by removing `+` and regex escape characters before querying. |
-| **User Search Matching** | Search is case-sensitive and prefix-only against user name. | Inform user or provide smart search queries (e.g., search initial capital letters or partial numbers). |
+| **User Search Regex Vulnerability** | Searching with `+` in `q` (e.g. `+1202...`) crashes MongoDB with error code `51091` (`500 Internal Server Error: quantifier does not follow a repeatable item`). | Sanitize query string on client by removing `+` and regex escape characters before querying. |
+| **User Search Exact Phone & Case Sensitivity** | `GET /api/users/search` uses exact equality for `phone` and case-sensitive prefix matching for `name`. Lowercase queries or partial phone searches return `0` results from the server. | The client implements a parallel directory warmup across uppercase alphabet chunks (`A-Z`, `0-9`), combined with in-memory fuzzy/prefix scoring and debounced multi-token queries. |
+| **Message Replies & Quotes** | `POST /messages` ignores any reply or parent message ID properties; MongoDB only stores `{ _id, conversation, sender, text, createdAt }`. | Quoted message replies cannot be natively stored on the backend; UI gracefully displays messages in chronological stream without reply nesting. |
+| **Conversation & Message Deletion** | The API does not expose endpoints to delete conversations or messages (`DELETE /api/conversations/:id` and `DELETE /api/messages/:id` return `404 Not Found`). Only group participant removal is supported. | Restrict destructive actions to group membership removal (`DELETE /api/conversations/:id/participants/:userId`). |
 | **Empty Message Validation** | `POST /messages` accepts empty string `""` and whitespace `"   "` with `200 OK`. | Client enforces strict trim validation (`text.trim().length > 0`) on send buttons and key handlers. |
 | **Cursor Pagination Inclusivity** | `GET /conversations/:id/messages?before=<id>` returns the cursor item itself as the first element of the next page. | Deduplicate messages when prepending older pages into local state by checking `message._id`. |
 | **Message Ordering** | `GET /conversations/:id/messages` returns messages in descending order (latest first). | Reverse message array or sort ascending by `createdAt` before rendering in chronological chat stream. |
