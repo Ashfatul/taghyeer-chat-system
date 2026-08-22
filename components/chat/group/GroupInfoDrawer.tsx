@@ -138,7 +138,7 @@ export default function GroupInfoDrawer({
               isGroup={true}
               participants={conversation.participants}
               size="xl"
-              className="mb-3 shadow-lg shadow-violet-500/15"
+              className="mb-3"
             />
 
             {/* Editable Group Title */}

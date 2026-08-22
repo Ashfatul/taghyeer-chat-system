@@ -102,7 +102,7 @@ npm start
 1. **Web Audio API Feedback (Zero External Assets)**:
    - Synthesized subtle audio chimes on message send (high chime) and message receive (soft pop).
    - Audio mute/unmute toggle in `ChatHeader` with persistent storage.
-2. **Real-Time Latency HUD**: Live connection status pill measuring round-trip WebSocket latency (`Live • 24ms`).
+2. **Real-Time Connection HUD**: Live dynamic connection status badge in the chat header tracking real-time WebSocket lifecycle (`Connected` / `Connecting...` / `Offline`).
 3. **Optimistic Send Failure Recovery**: 1-click **Retry** button if network drops during message transmission.
 4. **Interactive Sandbox**: Playable live chat widget on the landing page for evaluators.
 

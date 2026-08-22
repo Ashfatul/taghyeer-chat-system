@@ -25,6 +25,14 @@ const SIZE_CLASSES = {
   xl: "w-16 h-16 text-xl",
 };
 
+const GROUP_SUB_FONT_SIZES = {
+  xs: "text-[7px]",
+  sm: "text-[8px]",
+  md: "text-[9px]",
+  lg: "text-[11px]",
+  xl: "text-xs font-bold",
+};
+
 const DOT_SIZE_CLASSES = {
   xs: "w-1.5 h-1.5 border",
   sm: "w-2 h-2 border",
@@ -52,10 +60,13 @@ export default function UserAvatar({
       const colors2 = hashToHsl(p2._id || p2.name);
 
       return (
-        <div className={cn("relative shrink-0", SIZE_CLASSES[size], className)}>
+        <div className={cn("relative shrink-0 select-none", SIZE_CLASSES[size], className)}>
           {/* First participant avatar (top-left) */}
           <div
-            className="w-[65%] h-[65%] rounded-full absolute top-0 left-0 flex items-center justify-center font-bold text-[9px] shadow-sm border border-slate-900"
+            className={cn(
+              "w-[65%] h-[65%] rounded-full absolute top-0 left-0 flex items-center justify-center font-bold shadow-md border-2 border-[#0B0F19]",
+              GROUP_SUB_FONT_SIZES[size]
+            )}
             style={{
               backgroundColor: colors1.bg,
               color: colors1.text,
@@ -66,7 +77,10 @@ export default function UserAvatar({
           </div>
           {/* Second participant avatar (bottom-right) */}
           <div
-            className="w-[65%] h-[65%] rounded-full absolute bottom-0 right-0 flex items-center justify-center font-bold text-[9px] shadow-sm border border-slate-900"
+            className={cn(
+              "w-[65%] h-[65%] rounded-full absolute bottom-0 right-0 flex items-center justify-center font-bold shadow-md border-2 border-[#0B0F19]",
+              GROUP_SUB_FONT_SIZES[size]
+            )}
             style={{
               backgroundColor: colors2.bg,
               color: colors2.text,

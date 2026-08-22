@@ -131,8 +131,8 @@ export default function HomePage() {
               className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl w-full mx-auto mb-8 sm:mb-10 text-left"
             >
               <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-900/70 border border-slate-800/90 backdrop-blur-md hover:border-indigo-500/40 hover:-translate-y-1 transition duration-200 shadow-md">
-                <div className="text-xs text-slate-500 font-mono">Sync Latency</div>
-                <div className="text-sm font-bold text-emerald-400 mt-0.5">&lt; 25ms WebSocket</div>
+                <div className="text-xs text-slate-500 font-mono">Transport Layer</div>
+                <div className="text-sm font-bold text-emerald-400 mt-0.5">Socket.io v4</div>
               </div>
               <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-900/70 border border-slate-800/90 backdrop-blur-md hover:border-indigo-500/40 hover:-translate-y-1 transition duration-200 shadow-md">
                 <div className="text-xs text-slate-500 font-mono">Authentication</div>

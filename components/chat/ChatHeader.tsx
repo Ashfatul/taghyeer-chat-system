@@ -6,6 +6,8 @@ import UserAvatar from "./UserAvatar";
 import { ArrowLeft, Radio, Info, Volume2, VolumeX } from "lucide-react";
 import { formatPhoneNumber } from "@/lib/utils/colors";
 import { isSoundMuted, setSoundMuted } from "@/lib/utils/sound";
+import { useSocketStatus } from "@/hooks/useSocketStatus";
+import { cn } from "@/lib/utils/cn";
 
 interface ChatHeaderProps {
   conversation: Conversation;
@@ -19,6 +21,7 @@ export default function ChatHeader({
   onToggleGroupInfo,
 }: ChatHeaderProps) {
   const [isMuted, setIsMuted] = useState(false);
+  const { status, isConnected, isConnecting } = useSocketStatus();
 
   useEffect(() => {
     setIsMuted(isSoundMuted());
@@ -40,7 +43,7 @@ export default function ChatHeader({
     ? `${conversation.participants?.length || 0} participants`
     : conversation.participant?.phone
     ? formatPhoneNumber(conversation.participant.phone)
-    : "Online • Direct Chat";
+    : "Direct Chat";
 
   return (
     <header className="p-3 sm:p-3.5 border-b border-slate-800 bg-slate-900/70 backdrop-blur-xl flex items-center justify-between z-10 select-none">
@@ -76,7 +79,7 @@ export default function ChatHeader({
         </div>
       </div>
 
-      {/* Right: Sound Toggle + Real-time Live Badge + Group Details Action */}
+      {/* Right: Sound Toggle + Real-time Dynamic Connection Badge + Group Details Action */}
       <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
         {/* Sound FX Mute/Unmute Toggle */}
         <button
@@ -87,10 +90,19 @@ export default function ChatHeader({
           {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5 text-indigo-400" />}
         </button>
 
-        {/* Real-time Status Badge */}
-        <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-mono text-emerald-400">
-          <Radio className="w-2.5 h-2.5 animate-pulse" />
-          <span>Live • 24ms</span>
+        {/* Dynamic Real-time Connection Status Badge */}
+        <span
+          className={cn(
+            "hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-mono border transition-colors",
+            isConnected
+              ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
+              : isConnecting
+              ? "bg-amber-500/10 border-amber-500/20 text-amber-400"
+              : "bg-rose-500/10 border-rose-500/20 text-rose-400"
+          )}
+        >
+          <Radio className={cn("w-2.5 h-2.5", !isConnected ? "" : "animate-pulse")} />
+          <span>{isConnected ? "Connected" : isConnecting ? "Connecting..." : "Offline"}</span>
         </span>
 
         {/* Group Details Toggle */}
