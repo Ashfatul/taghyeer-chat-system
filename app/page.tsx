@@ -86,7 +86,7 @@ export default function HomePage() {
           </div>
 
           {/* Interactive Live Chat Sandbox Hero Widget */}
-          <div id="simulator" className="pt-4 scroll-mt-24">
+          <div id="simulator" className="pt-4 scroll-mt-24 text-left">
             <InteractiveMiniChat />
           </div>
         </section>
