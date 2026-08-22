@@ -15,7 +15,7 @@ export default function HomePage() {
   const { isAuthenticated } = useAuth();
 
   return (
-    <div className="min-h-screen bg-[#0B0F19] text-slate-100 flex flex-col relative overflow-hidden selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen bg-[#0B0F19] text-slate-100 flex flex-col relative overflow-x-hidden selection:bg-indigo-500 selection:text-white">
       {/* Background Ambient Glows */}
       <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[800px] h-[550px] bg-gradient-to-b from-indigo-600/20 via-violet-600/10 to-transparent rounded-full blur-[150px] pointer-events-none" />
       <div className="absolute top-[40%] right-[-10%] w-[600px] h-[600px] bg-indigo-600/10 rounded-full blur-[160px] pointer-events-none" />
