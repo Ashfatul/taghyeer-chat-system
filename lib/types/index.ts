@@ -12,7 +12,8 @@ export interface User {
 
 export interface Message {
   _id: string;
-  conversation: string;
+  id?: string;
+  conversation: string | { _id: string };
   sender: string | User;
   text: string;
   createdAt: string;

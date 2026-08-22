@@ -159,6 +159,7 @@ taghyeer-chat-system/
 │   └── thought-process.md      # Detailed technical write-up & decisions
 ├── hooks/
 │   ├── useConversations.ts     # Conversation list query & socket synchronization
+│   ├── useDebounce.ts          # Generic input debouncer for searches
 │   ├── useGroupMutations.ts    # Group renaming, member management & admin promotion
 │   ├── useMessages.ts          # Infinite cursor query, optimistic sends & audio cues
 │   └── useSmartScroll.ts       # Viewport detection, reading lock & prepend offset
@@ -166,7 +167,7 @@ taghyeer-chat-system/
     ├── api/                    # API client & modular resource services
     ├── socket/                 # Socket.io client manager
     ├── types/                  # TypeScript data models & schemas
-    └── utils/                  # Colors, date formatting, regex sanitization, sound FX
+    └── utils/                  # Colors, dates, search engine & ranking, sound FX
 ```
 
 ---

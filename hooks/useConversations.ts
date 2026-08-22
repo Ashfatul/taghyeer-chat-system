@@ -32,10 +32,20 @@ export function useConversations() {
     if (!socket) return;
 
     // When a new message is received globally
-    const handleNewMessage = (newMessage: Message) => {
+    const handleNewMessage = (newMessage: any) => {
+      const msgConvId =
+        typeof newMessage.conversation === "string"
+          ? newMessage.conversation
+          : newMessage.conversation?._id;
+
+      const normalizedCreatedAt =
+        typeof newMessage.createdAt === "number"
+          ? new Date(newMessage.createdAt).toISOString()
+          : newMessage.createdAt || new Date().toISOString();
+
       queryClient.setQueryData<Conversation[]>(CONVERSATIONS_QUERY_KEY, (oldData = []) => {
         const conversationIndex = oldData.findIndex(
-          (c) => c._id === newMessage.conversation
+          (c) => c._id === msgConvId
         );
 
         const senderId =
@@ -46,7 +56,7 @@ export function useConversations() {
         const updatedLastMessage = {
           text: newMessage.text,
           sender: senderId,
-          createdAt: newMessage.createdAt,
+          createdAt: normalizedCreatedAt,
         };
 
         if (conversationIndex === -1) {
@@ -58,7 +68,7 @@ export function useConversations() {
         const updatedConversation: Conversation = {
           ...oldData[conversationIndex],
           lastMessage: updatedLastMessage,
-          updatedAt: newMessage.createdAt,
+          updatedAt: normalizedCreatedAt,
         };
 
         // Move active conversation to the top

@@ -105,6 +105,19 @@ Searching for contacts and active conversations is central to a seamless messagi
 - **Observation**: `POST /api/auth/login` operates passwordlessly. Submitting a phone and name either authenticates an existing user or registers a new account and returns `{ token, user }`.
 - **Solution**: Handled in `AuthContext` with automatic `localStorage` token storage and initial verification via `GET /api/auth/me`.
 
+### 4.4 WebSocket `message:new` Schema Discrepancy (`id` vs `_id`) & Real-Time Replacement Bug
+- **Observation**: 
+  - The REST API endpoint `GET /api/conversations/:id/messages` returns message entities with MongoDB's standard `_id` string and ISO 8601 `createdAt` timestamps (e.g. `_id: "6a8918...", createdAt: "2026-08-22T03:35:00.191Z"`).
+  - However, the Socket.io WebSocket server broadcasts the `message:new` event with the key **`id`** (without the underscore) and a numeric millisecond timestamp (e.g. `{ id: "6a8918...", text: "...", createdAt: 1787369700191 }`).
+- **Symptom / Impact**:
+  - In the receiver's state, incoming socket messages had `_id: undefined`.
+  - When the real-time cache updater checked if the incoming message was already present (`m._id === newMessage._id`), `undefined === undefined` evaluated to `true` against the previously received socket message.
+  - Consequently, each new incoming message replaced the previous message in-place in the message list instead of appending to it. Sending 5 consecutive messages resulted in only the 5th message being displayed on the receiver end until a page refresh re-fetched the REST API data.
+- **Solution**:
+  1. Created a normalization layer inside `hooks/useMessages.ts` and `hooks/useConversations.ts` that maps `_id: rawMessage._id || rawMessage.id` and converts numeric timestamps to standardized ISO strings upon socket arrival.
+  2. Enforced strict string identity checking (`mId && messageId && mId === messageId`), preventing falsy `undefined === undefined` matches.
+  3. Scoped optimistic replacement strictly to locally authored messages (`m.tempId && m.status === "sending"`), guaranteeing that receiver streams always cleanly append incoming messages.
+
 ---
 
 ## 5. Future Improvements & Production Roadmap

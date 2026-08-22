@@ -691,6 +691,7 @@ During end-to-end testing against the live deployment, several critical API beha
 | **Cursor Pagination Inclusivity** | `GET /conversations/:id/messages?before=<id>` returns the cursor item itself as the first element of the next page. | Deduplicate messages when prepending older pages into local state by checking `message._id`. |
 | **Message Ordering** | `GET /conversations/:id/messages` returns messages in descending order (latest first). | Reverse message array or sort ascending by `createdAt` before rendering in chronological chat stream. |
 | **Group vs Direct Format Discrepancy** | Direct conversations return a single `participant` object; Group conversations return a `participants` array. | Normalize conversation entities with type guards (`type === "group"` vs `type === "direct"`). |
+| **WebSocket `message:new` Key & Timestamp Discrepancy** | REST API returns `_id` and ISO 8601 string timestamps, while Socket.io emits `id` (without `_`) and numeric millisecond timestamps. | Normalize incoming socket payloads on receipt (`_id: msg._id || msg.id` and ISO `createdAt`) and enforce strict non-empty ID comparisons to avoid `undefined === undefined` message replacements. |
 
 ---
 
