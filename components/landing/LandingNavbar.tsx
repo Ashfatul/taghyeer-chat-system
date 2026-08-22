@@ -20,15 +20,15 @@ export default function LandingNavbar() {
 
   return (
     <header
-      className={`sticky top-0 z-40 w-full transition-all duration-200 ${
+      className={`fixed top-0 inset-x-0 z-50 w-full transition-all duration-200 ${
         isScrolled
-          ? "bg-[#0B0F19]/90 backdrop-blur-xl border-b border-slate-800/80 shadow-2xl shadow-black/40"
-          : "bg-transparent border-b border-transparent"
+          ? "bg-[#0B0F19]/95 backdrop-blur-xl border-b border-slate-800 shadow-2xl shadow-black/50"
+          : "bg-[#0B0F19]/80 backdrop-blur-md border-b border-slate-800/50"
       }`}
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         {/* Brand Logo */}
-        <Link href="/" className="flex items-center gap-2.5 group">
+        <Link href="/" className="flex items-center gap-2.5 group shrink-0">
           <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/25 group-hover:scale-105 transition-transform">
             <MessageSquare className="w-5 h-5" />
           </div>
@@ -95,41 +95,42 @@ export default function LandingNavbar() {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-[#0B0F19] border-b border-slate-800 px-6 py-4 space-y-3 animate-fade-in">
+        <div className="md:hidden bg-[#0B0F19]/95 backdrop-blur-2xl border-b border-slate-800 px-6 py-4 space-y-3 animate-fade-in shadow-2xl">
           <a
             href="#features"
             onClick={() => setMobileMenuOpen(false)}
-            className="block text-xs font-medium text-slate-300 py-1"
+            className="block text-xs font-medium text-slate-300 hover:text-white py-1.5 transition"
           >
             Features
           </a>
           <a
             href="#simulator"
             onClick={() => setMobileMenuOpen(false)}
-            className="block text-xs font-medium text-slate-300 py-1"
+            className="block text-xs font-medium text-slate-300 hover:text-white py-1.5 transition"
           >
             Live Sandbox
           </a>
           <a
             href="#architecture"
             onClick={() => setMobileMenuOpen(false)}
-            className="block text-xs font-medium text-slate-300 py-1"
+            className="block text-xs font-medium text-slate-300 hover:text-white py-1.5 transition"
           >
             Architecture
           </a>
           <a
             href="#api"
             onClick={() => setMobileMenuOpen(false)}
-            className="block text-xs font-medium text-slate-300 py-1"
+            className="block text-xs font-medium text-slate-300 hover:text-white py-1.5 transition"
           >
             API Spec
           </a>
           <div className="pt-2">
             <Link
               href={isAuthenticated ? "/chat" : "/login"}
-              className="w-full py-2.5 rounded-xl bg-indigo-600 text-white text-xs font-bold flex items-center justify-center gap-1.5"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition active:scale-95 shadow-lg shadow-indigo-500/25"
             >
-              <span>{isAuthenticated ? "Open Chat" : "Launch App"}</span>
+              <span>{isAuthenticated ? `Open Chat (${user?.name.split(" ")[0] || "Live"})` : "Launch App"}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>

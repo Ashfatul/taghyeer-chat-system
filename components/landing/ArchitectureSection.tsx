@@ -113,7 +113,8 @@ export default function ArchitectureSection() {
   };
 
   return (
-    <section id="architecture" className="py-6 sm:py-10 max-w-6xl mx-auto px-4 sm:px-6 relative">
+    <section id="architecture" className="py-6 sm:py-10 max-w-6xl mx-auto px-4 sm:px-6 relative scroll-mt-24">
+      <div id="api" className="scroll-mt-24" />
       {/* Section Header */}
       <motion.div
         initial={{ opacity: 0, y: 28 }}
@@ -144,11 +145,11 @@ export default function ArchitectureSection() {
       >
         {/* Tab Navigation */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4 mb-6">
-          <div className="flex items-center gap-1.5 p-1 bg-slate-950 rounded-2xl border border-slate-800">
+          <div className="flex flex-wrap items-center gap-1 p-1 bg-slate-950 rounded-2xl border border-slate-800 max-w-full">
             <button
               onClick={() => setActiveTab("rest")}
               className={cn(
-                "px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition active:scale-95",
+                "px-2.5 sm:px-3.5 py-1.5 rounded-xl text-[11px] sm:text-xs font-semibold flex items-center gap-1.5 transition active:scale-95 whitespace-nowrap",
                 activeTab === "rest"
                   ? "bg-indigo-600 text-white shadow-sm"
                   : "text-slate-400 hover:text-slate-200"
@@ -161,7 +162,7 @@ export default function ArchitectureSection() {
             <button
               onClick={() => setActiveTab("socket")}
               className={cn(
-                "px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition active:scale-95",
+                "px-2.5 sm:px-3.5 py-1.5 rounded-xl text-[11px] sm:text-xs font-semibold flex items-center gap-1.5 transition active:scale-95 whitespace-nowrap",
                 activeTab === "socket"
                   ? "bg-indigo-600 text-white shadow-sm"
                   : "text-slate-400 hover:text-slate-200"
@@ -174,7 +175,7 @@ export default function ArchitectureSection() {
             <button
               onClick={() => setActiveTab("resilience")}
               className={cn(
-                "px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition active:scale-95",
+                "px-2.5 sm:px-3.5 py-1.5 rounded-xl text-[11px] sm:text-xs font-semibold flex items-center gap-1.5 transition active:scale-95 whitespace-nowrap",
                 activeTab === "resilience"
                   ? "bg-indigo-600 text-white shadow-sm"
                   : "text-slate-400 hover:text-slate-200"
@@ -191,7 +192,8 @@ export default function ArchitectureSection() {
             rel="noopener noreferrer"
             className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 font-mono transition"
           >
-            <span>Live Swagger Documentation</span>
+            <span className="hidden sm:inline">Live Swagger Documentation</span>
+            <span className="sm:hidden">Swagger Docs</span>
             <ExternalLink className="w-3 h-3" />
           </a>
         </div>

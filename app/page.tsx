@@ -58,13 +58,13 @@ export default function HomePage() {
       <div className="absolute bottom-[20%] left-[-10%] w-[550px] h-[550px] bg-violet-600/10 rounded-full blur-[150px] pointer-events-none" />
       <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:28px_28px] opacity-25 pointer-events-none" />
 
-      {/* Sticky Header Navigation */}
+      {/* Fixed Header Navigation */}
       <LandingNavbar />
 
       {/* Main Content Sections with Balanced Vertical Rhythm */}
-      <main className="flex-1 z-10 space-y-12 sm:space-y-16 pb-12">
+      <main className="flex-1 z-10 space-y-12 sm:space-y-16 pb-12 pt-16">
         {/* Section 1: Hero Section */}
-        <section className="pt-8 sm:pt-14 px-4 sm:px-6 max-w-5xl mx-auto text-center">
+        <section className="pt-6 sm:pt-10 px-4 sm:px-6 max-w-5xl mx-auto text-center">
           <motion.div
             variants={STAGGER_CONTAINER}
             initial="hidden"
@@ -76,19 +76,20 @@ export default function HomePage() {
               <motion.div
                 animate={{ y: [0, -3, 0] }}
                 transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
-                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 text-xs font-semibold mb-5 shadow-lg shadow-indigo-500/10 backdrop-blur-md"
+                className="inline-flex items-center gap-2 px-3.5 sm:px-4 py-1.5 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 text-xs font-semibold mb-5 shadow-lg shadow-indigo-500/10 backdrop-blur-md max-w-full"
               >
-                <Sparkles className="w-3.5 h-3.5 animate-pulse text-indigo-400" />
-                <span>Frontend Take-Home Assignment • Part 2 Creative Showcase</span>
+                <Sparkles className="w-3.5 h-3.5 animate-pulse text-indigo-400 shrink-0" />
+                <span className="hidden sm:inline">Frontend Take-Home Assignment • Part 2 Creative Showcase</span>
+                <span className="sm:hidden">Take-Home Assignment • Showcase</span>
               </motion.div>
             </motion.div>
 
             {/* Headline */}
             <motion.h1
               variants={HERO_VARIANTS}
-              className="text-4xl sm:text-6xl md:text-7xl font-black text-white tracking-tight leading-[1.08] mb-5"
+              className="text-3xl sm:text-5xl md:text-7xl font-black text-white tracking-tight leading-[1.12] mb-4 sm:mb-5"
             >
-              Real-Time Conversations. <br />
+              Real-Time Conversations. <br className="hidden sm:inline" />
               <span className="bg-gradient-to-r from-indigo-400 via-violet-300 to-indigo-200 bg-clip-text text-transparent drop-shadow-sm">
                 Engineered for Speed.
               </span>
@@ -97,7 +98,7 @@ export default function HomePage() {
             {/* Subtitle */}
             <motion.p
               variants={HERO_VARIANTS}
-              className="text-base sm:text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed mb-7"
+              className="text-sm sm:text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed mb-6 sm:mb-7"
             >
               A production-grade, WebSocket-powered chat platform featuring instant passwordless auth,
               multi-user group governance, and intelligent auto-scroll physics.
@@ -106,7 +107,7 @@ export default function HomePage() {
             {/* Action CTAs */}
             <motion.div
               variants={HERO_VARIANTS}
-              className="flex flex-col sm:flex-row items-center justify-center gap-3.5 mb-8 sm:mb-10 w-full sm:w-auto"
+              className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-7 sm:mb-9 w-full sm:w-auto"
             >
               <Link
                 href={isAuthenticated ? "/chat" : "/login"}
@@ -128,23 +129,23 @@ export default function HomePage() {
             {/* Key Metric Chips */}
             <motion.div
               variants={HERO_VARIANTS}
-              className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl w-full mx-auto mb-8 sm:mb-10 text-left"
+              className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 max-w-3xl w-full mx-auto mb-8 sm:mb-10 text-left"
             >
-              <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-900/70 border border-slate-800/90 backdrop-blur-md hover:border-indigo-500/40 hover:-translate-y-1 transition duration-200 shadow-md">
-                <div className="text-xs text-slate-500 font-mono">Transport Layer</div>
-                <div className="text-sm font-bold text-emerald-400 mt-0.5">Socket.io v4</div>
+              <div className="p-3 sm:p-4 rounded-2xl bg-slate-900/70 border border-slate-800/90 backdrop-blur-md hover:border-indigo-500/40 hover:-translate-y-1 transition duration-200 shadow-md min-w-0">
+                <div className="text-[11px] sm:text-xs text-slate-500 font-mono truncate">Transport Layer</div>
+                <div className="text-xs sm:text-sm font-bold text-emerald-400 mt-0.5 truncate">Socket.io v4</div>
               </div>
-              <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-900/70 border border-slate-800/90 backdrop-blur-md hover:border-indigo-500/40 hover:-translate-y-1 transition duration-200 shadow-md">
-                <div className="text-xs text-slate-500 font-mono">Authentication</div>
-                <div className="text-sm font-bold text-indigo-400 mt-0.5">100% Passwordless</div>
+              <div className="p-3 sm:p-4 rounded-2xl bg-slate-900/70 border border-slate-800/90 backdrop-blur-md hover:border-indigo-500/40 hover:-translate-y-1 transition duration-200 shadow-md min-w-0">
+                <div className="text-[11px] sm:text-xs text-slate-500 font-mono truncate">Authentication</div>
+                <div className="text-xs sm:text-sm font-bold text-indigo-400 mt-0.5 truncate">100% Passwordless</div>
               </div>
-              <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-900/70 border border-slate-800/90 backdrop-blur-md hover:border-indigo-500/40 hover:-translate-y-1 transition duration-200 shadow-md">
-                <div className="text-xs text-slate-500 font-mono">Scroll Physics</div>
-                <div className="text-sm font-bold text-violet-400 mt-0.5">Zero Disruption</div>
+              <div className="p-3 sm:p-4 rounded-2xl bg-slate-900/70 border border-slate-800/90 backdrop-blur-md hover:border-indigo-500/40 hover:-translate-y-1 transition duration-200 shadow-md min-w-0">
+                <div className="text-[11px] sm:text-xs text-slate-500 font-mono truncate">Scroll Physics</div>
+                <div className="text-xs sm:text-sm font-bold text-violet-400 mt-0.5 truncate">Zero Disruption</div>
               </div>
-              <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-900/70 border border-slate-800/90 backdrop-blur-md hover:border-indigo-500/40 hover:-translate-y-1 transition duration-200 shadow-md">
-                <div className="text-xs text-slate-500 font-mono">Design System</div>
-                <div className="text-sm font-bold text-amber-400 mt-0.5">WCAG AAA Dark</div>
+              <div className="p-3 sm:p-4 rounded-2xl bg-slate-900/70 border border-slate-800/90 backdrop-blur-md hover:border-indigo-500/40 hover:-translate-y-1 transition duration-200 shadow-md min-w-0">
+                <div className="text-[11px] sm:text-xs text-slate-500 font-mono truncate">Design System</div>
+                <div className="text-xs sm:text-sm font-bold text-amber-400 mt-0.5 truncate">WCAG AAA Dark</div>
               </div>
             </motion.div>
           </motion.div>
@@ -160,7 +161,7 @@ export default function HomePage() {
               damping: 24,
               stiffness: 110,
             }}
-            className="pt-2 scroll-mt-20 text-left"
+            className="pt-2 scroll-mt-24 text-left"
           >
             <InteractiveMiniChat />
           </motion.div>

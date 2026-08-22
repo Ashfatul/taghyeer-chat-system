@@ -20,7 +20,7 @@ const CARD_VARIANTS: Variants = {
 
 export default function FeatureSection() {
   return (
-    <section id="features" className="py-6 sm:py-10 max-w-6xl mx-auto px-4 sm:px-6 relative">
+    <section id="features" className="py-6 sm:py-10 max-w-6xl mx-auto px-4 sm:px-6 relative scroll-mt-24">
       {/* Section Header */}
       <motion.div
         initial={{ opacity: 0, y: 28 }}

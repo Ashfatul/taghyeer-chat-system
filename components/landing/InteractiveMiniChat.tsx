@@ -225,38 +225,43 @@ export default function InteractiveMiniChat() {
   return (
     <div className="w-full max-w-4xl mx-auto rounded-3xl border border-slate-800 bg-slate-900/90 shadow-2xl backdrop-blur-2xl overflow-hidden flex flex-col select-none text-left">
       {/* Simulator Control Toolbar */}
-      <div className="p-3 bg-slate-950/80 border-b border-slate-800/80 flex flex-wrap items-center justify-between gap-2.5">
-        <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-xs font-bold text-white tracking-tight">Interactive Live Sandbox</span>
-          <span className="text-[10px] text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-2 py-0.5 rounded-full font-mono">
+      <div className="p-2.5 sm:p-3 bg-slate-950/90 border-b border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-2.5">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+          <span className="text-xs font-bold text-white tracking-tight truncate">
+            Interactive Live Sandbox
+          </span>
+          <span className="text-[10px] text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-2 py-0.5 rounded-full font-mono shrink-0 hidden xs:inline-block sm:inline-block">
             Direct & Group Simulator
           </span>
         </div>
 
         {/* Action Triggers */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 self-end sm:self-auto shrink-0">
           <button
             onClick={triggerInboundReply}
             disabled={isTyping}
-            className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1 transition active:scale-95 shadow-sm disabled:opacity-40"
+            className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1 transition active:scale-95 shadow-sm disabled:opacity-40 whitespace-nowrap"
           >
-            <Zap className="w-3 h-3" />
-            <span>Simulate Reply</span>
+            <Zap className="w-3 h-3 shrink-0" />
+            <span className="hidden sm:inline">Simulate Reply</span>
+            <span className="sm:hidden">Simulate</span>
           </button>
 
           <button
             onClick={testScrollLock}
-            className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-medium transition"
+            className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-medium transition whitespace-nowrap"
             title="Scroll up and simulate incoming message to test unread floating badge"
           >
-            Test Scroll Lock
+            <span className="hidden sm:inline">Test Scroll Lock</span>
+            <span className="sm:hidden">Scroll Lock</span>
           </button>
 
           <button
             onClick={handleReset}
-            className="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white rounded-xl text-xs transition"
+            className="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white rounded-xl text-xs transition shrink-0"
             title="Reset Simulator"
+            aria-label="Reset Simulator"
           >
             <RefreshCw className="w-3.5 h-3.5" />
           </button>
@@ -266,46 +271,51 @@ export default function InteractiveMiniChat() {
       {/* Mini Chat Window */}
       <div className="flex flex-col h-[400px] sm:h-[440px] bg-[#0B0F19] relative text-left">
         {/* Header matching real ChatHeader */}
-        <div className="px-4 py-3 border-b border-slate-800/80 bg-slate-900/80 backdrop-blur-md flex items-center justify-between">
-          <div className="flex items-center gap-3 min-w-0">
-            <UserAvatar
-              name={chatMode === "group" ? "Engineering Core" : "Alex Mercer"}
-              userId={chatMode === "group" ? undefined : "alex_id"}
-              isGroup={chatMode === "group"}
-              size="md"
-              showOnline={true}
-              isOnline={true}
-            />
-            <div className="min-w-0">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-bold text-white truncate">
+        <div className="px-3 sm:px-4 py-2.5 sm:py-3 border-b border-slate-800/80 bg-slate-900/80 backdrop-blur-md flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
+            <div className="shrink-0">
+              <UserAvatar
+                name={chatMode === "group" ? "Engineering Core" : "Alex Mercer"}
+                userId={chatMode === "group" ? undefined : "alex_id"}
+                isGroup={chatMode === "group"}
+                size="md"
+                showOnline={true}
+                isOnline={true}
+              />
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <span className="text-xs sm:text-sm font-bold text-white truncate">
                   {chatMode === "group" ? "Engineering Core" : "Alex Mercer"}
                 </span>
                 {chatMode === "group" && (
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-violet-500/15 border border-violet-500/30 text-violet-300 font-mono font-medium">
+                  <span className="text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 rounded-full bg-violet-500/15 border border-violet-500/30 text-violet-300 font-mono font-medium shrink-0">
                     Group
                   </span>
                 )}
               </div>
-              <div className="text-xs text-slate-400 font-mono flex items-center gap-2">
+              <div className="text-[11px] sm:text-xs text-slate-400 font-mono">
                 {chatMode === "group" ? (
-                  <span className="truncate text-slate-400">Alex Mercer, Maya Lin, Sarah Connor (You)</span>
+                  <p className="truncate text-slate-400">Alex Mercer, Maya Lin, Sarah Connor (You)</p>
                 ) : (
-                  <span className="text-emerald-400 flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                    Active now • +1 (202) 555-0102
-                  </span>
+                  <div className="text-emerald-400 flex items-center gap-1.5 truncate">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+                    <span className="truncate">
+                      Active now
+                      <span className="hidden sm:inline"> • +1 (202) 555-0102</span>
+                    </span>
+                  </div>
                 )}
               </div>
             </div>
           </div>
 
           {/* Mode Switcher */}
-          <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+          <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 shrink-0">
             <button
               onClick={() => handleSwitchMode("direct")}
               className={cn(
-                "px-2.5 py-1 rounded-lg text-xs font-semibold transition",
+                "px-2 sm:px-2.5 py-1 rounded-lg text-[11px] sm:text-xs font-semibold transition",
                 chatMode === "direct" ? "bg-indigo-600 text-white shadow-sm" : "text-slate-400 hover:text-white"
               )}
             >
@@ -314,7 +324,7 @@ export default function InteractiveMiniChat() {
             <button
               onClick={() => handleSwitchMode("group")}
               className={cn(
-                "px-2.5 py-1 rounded-lg text-xs font-semibold transition",
+                "px-2 sm:px-2.5 py-1 rounded-lg text-[11px] sm:text-xs font-semibold transition",
                 chatMode === "group" ? "bg-indigo-600 text-white shadow-sm" : "text-slate-400 hover:text-white"
               )}
             >
@@ -329,11 +339,11 @@ export default function InteractiveMiniChat() {
           onScroll={() => {
             if (isNearBottom()) setUnreadCount(0);
           }}
-          className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar text-left"
+          className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 custom-scrollbar text-left"
         >
           {/* Date Divider */}
-          <div className="flex justify-center my-2">
-            <span className="bg-slate-900/90 border border-slate-800 text-slate-400 text-[10px] font-semibold px-3 py-1 rounded-full shadow-sm select-none backdrop-blur-md">
+          <div className="flex justify-center my-1.5 sm:my-2">
+            <span className="bg-slate-900/90 border border-slate-800 text-slate-400 text-[10px] font-semibold px-3 py-0.5 sm:py-1 rounded-full shadow-sm select-none backdrop-blur-md">
               Today
             </span>
           </div>
@@ -343,12 +353,12 @@ export default function InteractiveMiniChat() {
             <div
               key={m.id}
               className={cn(
-                "flex items-end gap-2 max-w-[85%] sm:max-w-[75%] animate-fade-in group relative",
+                "flex items-end gap-1.5 sm:gap-2 max-w-[90%] sm:max-w-[75%] animate-fade-in group relative",
                 m.isMe ? "ml-auto justify-end" : "justify-start"
               )}
             >
               {!m.isMe && (
-                <div className="w-7 h-7 shrink-0 mb-0.5 select-none">
+                <div className="w-6 h-6 sm:w-7 sm:h-7 shrink-0 mb-0.5 select-none">
                   <UserAvatar name={m.senderName} userId={m.sender} size="xs" />
                 </div>
               )}
@@ -357,7 +367,7 @@ export default function InteractiveMiniChat() {
                 {/* Group Sender Name with HSL deterministic styling */}
                 {!m.isMe && chatMode === "group" && (
                   <span
-                    className="text-[11px] font-bold mb-1 ml-1 select-none flex items-center gap-1 text-left"
+                    className="text-[10px] sm:text-[11px] font-bold mb-0.5 ml-1 select-none flex items-center gap-1 text-left truncate max-w-[200px]"
                     style={{ color: hashToHsl(m.senderName).text }}
                   >
                     {m.senderName}
@@ -367,7 +377,7 @@ export default function InteractiveMiniChat() {
                 {/* Bubble Body */}
                 <div
                   className={cn(
-                    "relative px-4 py-2.5 shadow-sm text-xs sm:text-sm leading-relaxed break-words whitespace-pre-wrap select-text text-left transition-all",
+                    "relative px-3.5 sm:px-4 py-2 sm:py-2.5 shadow-sm text-xs sm:text-sm leading-relaxed [overflow-wrap:anywhere] break-words whitespace-pre-wrap select-text text-left transition-all",
                     m.isMe
                       ? "bg-gradient-to-br from-indigo-600 to-indigo-500 text-white rounded-2xl rounded-br-xs shadow-indigo-500/10"
                       : "bg-slate-800/90 border border-slate-700/70 text-slate-100 rounded-2xl rounded-bl-xs shadow-black/10"
@@ -391,10 +401,10 @@ export default function InteractiveMiniChat() {
           {/* Typing Indicator */}
           {isTyping && (
             <div className="flex items-center gap-2 text-slate-400 text-xs pl-1 animate-fade-in text-left">
-              <div className="w-7 h-7 shrink-0">
+              <div className="w-6 h-6 sm:w-7 sm:h-7 shrink-0">
                 <UserAvatar name={typingUser} size="xs" />
               </div>
-              <div className="bg-slate-800/80 px-3.5 py-2 rounded-2xl rounded-bl-xs border border-slate-700/60 flex items-center gap-1.5">
+              <div className="bg-slate-800/80 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-2xl rounded-bl-xs border border-slate-700/60 flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce" />
                 <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce [animation-delay:0.2s]" />
                 <span className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce [animation-delay:0.4s]" />
@@ -408,7 +418,7 @@ export default function InteractiveMiniChat() {
           <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-20">
             <button
               onClick={() => scrollToBottom(true)}
-              className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-3.5 py-1.5 rounded-full shadow-lg border border-indigo-400/40 flex items-center gap-1.5 animate-bounce"
+              className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-3.5 py-1.5 rounded-full shadow-lg border border-indigo-400/40 flex items-center gap-1.5 whitespace-nowrap animate-bounce"
             >
               <ArrowDown className="w-3.5 h-3.5" />
               <span>{unreadCount} New Message{unreadCount > 1 ? "s" : ""}</span>
@@ -416,22 +426,22 @@ export default function InteractiveMiniChat() {
           </div>
         )}
 
-        {/* Composer Bar with 44px uniform base heights */}
+        {/* Composer Bar with uniform base heights */}
         <form
           onSubmit={handleSendMessage}
-          className="p-3 border-t border-slate-800/80 bg-slate-900/90 backdrop-blur-md flex items-center gap-2 text-left"
+          className="p-2.5 sm:p-3 border-t border-slate-800/80 bg-slate-900/90 backdrop-blur-md flex items-center gap-2 text-left"
         >
           <input
             type="text"
             value={inputVal}
             onChange={(e) => setInputVal(e.target.value)}
-            placeholder="Type a simulated message... (Press Enter)"
-            className="flex-1 h-11 bg-slate-950 border border-slate-800 rounded-xl px-4 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition text-left"
+            placeholder="Type a simulated message..."
+            className="flex-1 h-10 sm:h-11 bg-slate-950 border border-slate-800 rounded-xl px-3.5 sm:px-4 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition text-left min-w-0"
           />
           <button
             type="submit"
             disabled={!inputVal.trim()}
-            className="h-11 px-4 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-600 text-white rounded-xl text-xs font-semibold transition active:scale-95 disabled:opacity-40 flex items-center justify-center gap-1.5 shrink-0 shadow-md shadow-indigo-500/20"
+            className="h-10 sm:h-11 px-3.5 sm:px-4 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-600 text-white rounded-xl text-xs font-semibold transition active:scale-95 disabled:opacity-40 flex items-center justify-center gap-1.5 shrink-0 shadow-md shadow-indigo-500/20"
           >
             <span>Send</span>
             <Send className="w-3.5 h-3.5" />
