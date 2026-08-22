@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Code2,
   Radio,
@@ -112,30 +113,42 @@ export default function ArchitectureSection() {
   };
 
   return (
-    <section id="architecture" className="py-20 max-w-6xl mx-auto px-4 sm:px-6 relative">
+    <section id="architecture" className="py-6 sm:py-10 max-w-6xl mx-auto px-4 sm:px-6 relative">
       {/* Section Header */}
-      <div className="text-center max-w-2xl mx-auto mb-12">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 text-xs font-semibold uppercase tracking-wider mb-3">
-          <Terminal className="w-3.5 h-3.5" />
+      <motion.div
+        initial={{ opacity: 0, y: 28 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-40px" }}
+        transition={{ type: "spring", damping: 24, stiffness: 130 }}
+        className="text-center max-w-2xl mx-auto mb-8 sm:mb-10"
+      >
+        <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-violet-500/10 border border-violet-500/25 text-violet-400 text-xs font-semibold uppercase tracking-wider mb-2.5">
+          <Terminal className="w-3.5 h-3.5 text-violet-400" />
           Technical Specification
         </div>
         <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
           Live API & Architecture Inspector
         </h2>
-        <p className="text-sm text-slate-400 mt-2">
+        <p className="text-sm text-slate-400 mt-2.5 leading-relaxed">
           Explore the live RESTful endpoints, Socket.io real-time protocols, and edge-case resilience architecture.
         </p>
-      </div>
+      </motion.div>
 
       {/* Main Tabbed Container */}
-      <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 shadow-2xl backdrop-blur-2xl">
+      <motion.div
+        initial={{ opacity: 0, y: 36, scale: 0.98 }}
+        whileInView={{ opacity: 1, y: 0, scale: 1 }}
+        viewport={{ once: true, margin: "-40px" }}
+        transition={{ type: "spring", damping: 24, stiffness: 110 }}
+        className="bg-slate-900/80 border border-slate-800 rounded-3xl p-4 sm:p-6 shadow-2xl backdrop-blur-2xl"
+      >
         {/* Tab Navigation */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4 mb-6">
           <div className="flex items-center gap-1.5 p-1 bg-slate-950 rounded-2xl border border-slate-800">
             <button
               onClick={() => setActiveTab("rest")}
               className={cn(
-                "px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition",
+                "px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition active:scale-95",
                 activeTab === "rest"
                   ? "bg-indigo-600 text-white shadow-sm"
                   : "text-slate-400 hover:text-slate-200"
@@ -148,7 +161,7 @@ export default function ArchitectureSection() {
             <button
               onClick={() => setActiveTab("socket")}
               className={cn(
-                "px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition",
+                "px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition active:scale-95",
                 activeTab === "socket"
                   ? "bg-indigo-600 text-white shadow-sm"
                   : "text-slate-400 hover:text-slate-200"
@@ -161,7 +174,7 @@ export default function ArchitectureSection() {
             <button
               onClick={() => setActiveTab("resilience")}
               className={cn(
-                "px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition",
+                "px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition active:scale-95",
                 activeTab === "resilience"
                   ? "bg-indigo-600 text-white shadow-sm"
                   : "text-slate-400 hover:text-slate-200"
@@ -183,161 +196,185 @@ export default function ArchitectureSection() {
           </a>
         </div>
 
-        {/* Tab Content 1: REST Endpoints */}
-        {activeTab === "rest" && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {/* Left Column: Endpoint List */}
-            <div className="lg:col-span-5 space-y-1.5">
-              {REST_ENDPOINTS.map((ep, idx) => (
-                <button
-                  key={ep.path}
-                  onClick={() => setSelectedEndpointIdx(idx)}
-                  className={cn(
-                    "w-full p-3 rounded-2xl text-left border transition flex items-center justify-between select-none",
-                    selectedEndpointIdx === idx
-                      ? "bg-indigo-500/15 border-indigo-500/40 text-white"
-                      : "bg-slate-950/50 hover:bg-slate-800/60 border-slate-800/80 text-slate-400"
-                  )}
-                >
-                  <div className="min-w-0 pr-2">
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={cn(
-                          "px-2 py-0.5 rounded text-[10px] font-bold font-mono",
-                          ep.method === "POST"
-                            ? "bg-emerald-500/20 text-emerald-400"
-                            : ep.method === "GET"
-                            ? "bg-sky-500/20 text-sky-400"
-                            : "bg-amber-500/20 text-amber-400"
-                        )}
-                      >
-                        {ep.method}
+        {/* Tab Content Animated Switching */}
+        <AnimatePresence mode="wait">
+          {/* Tab Content 1: REST Endpoints */}
+          {activeTab === "rest" && (
+            <motion.div
+              key="rest"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.3 }}
+              className="grid grid-cols-1 lg:grid-cols-12 gap-6"
+            >
+              {/* Left Column: Endpoint List */}
+              <div className="lg:col-span-5 space-y-1.5">
+                {REST_ENDPOINTS.map((ep, idx) => (
+                  <button
+                    key={ep.path}
+                    onClick={() => setSelectedEndpointIdx(idx)}
+                    className={cn(
+                      "w-full p-3 rounded-2xl text-left border transition flex items-center justify-between select-none active:scale-[0.99]",
+                      selectedEndpointIdx === idx
+                        ? "bg-indigo-500/15 border-indigo-500/40 text-white"
+                        : "bg-slate-950/50 hover:bg-slate-800/60 border-slate-800/80 text-slate-400"
+                    )}
+                  >
+                    <div className="min-w-0 pr-2">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={cn(
+                            "px-2 py-0.5 rounded text-[10px] font-bold font-mono",
+                            ep.method === "POST"
+                              ? "bg-emerald-500/20 text-emerald-400"
+                              : ep.method === "GET"
+                              ? "bg-sky-500/20 text-sky-400"
+                              : "bg-amber-500/20 text-amber-400"
+                          )}
+                        >
+                          {ep.method}
+                        </span>
+                        <span className="text-xs font-mono font-bold text-slate-200 truncate">
+                          {ep.path}
+                        </span>
+                      </div>
+                      <div className="text-[11px] text-slate-400 mt-1 truncate">{ep.desc}</div>
+                    </div>
+                    <ChevronRight
+                      className={cn(
+                        "w-4 h-4 shrink-0 transition",
+                        selectedEndpointIdx === idx ? "text-indigo-400 translate-x-0.5" : "text-slate-600"
+                      )}
+                    />
+                  </button>
+                ))}
+              </div>
+
+              {/* Right Column: Payload & Response Viewer */}
+              <div className="lg:col-span-7 bg-slate-950 rounded-2xl border border-slate-800 p-4 sm:p-5 flex flex-col justify-between">
+                <div>
+                  <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-800 mb-4">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-xs font-bold text-white font-mono">
+                        {selectedEndpoint.method} {selectedEndpoint.path}
                       </span>
-                      <span className="text-xs font-mono font-bold text-slate-200 truncate">
-                        {ep.path}
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300">
+                        Auth: {selectedEndpoint.auth}
                       </span>
                     </div>
-                    <div className="text-[11px] text-slate-400 mt-1 truncate">{ep.desc}</div>
-                  </div>
-                  <ChevronRight
-                    className={cn(
-                      "w-4 h-4 shrink-0 transition",
-                      selectedEndpointIdx === idx ? "text-indigo-400 translate-x-0.5" : "text-slate-600"
-                    )}
-                  />
-                </button>
-              ))}
-            </div>
 
-            {/* Right Column: Payload & Response Viewer */}
-            <div className="lg:col-span-7 bg-slate-950 rounded-2xl border border-slate-800 p-4 sm:p-5 flex flex-col justify-between">
-              <div>
-                <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-800 mb-4">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-xs font-bold text-white font-mono">
-                      {selectedEndpoint.method} {selectedEndpoint.path}
-                    </span>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300">
-                      Auth: {selectedEndpoint.auth}
-                    </span>
+                    <button
+                      onClick={() => handleCopy(selectedEndpoint.response)}
+                      className="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white transition text-xs flex items-center gap-1 font-mono active:scale-95"
+                      title="Copy response JSON"
+                    >
+                      {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                      <span>{copied ? "Copied!" : "Copy"}</span>
+                    </button>
                   </div>
 
-                  <button
-                    onClick={() => handleCopy(selectedEndpoint.response)}
-                    className="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white transition text-xs flex items-center gap-1 font-mono active:scale-95"
-                    title="Copy response JSON"
-                  >
-                    {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                    <span>{copied ? "Copied!" : "Copy"}</span>
-                  </button>
-                </div>
-
-                {/* Request Payload */}
-                <div className="mb-4">
-                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">
-                    Request Payload
+                  {/* Request Payload */}
+                  <div className="mb-4">
+                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">
+                      Request Payload
+                    </div>
+                    <pre className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-[11px] font-mono text-indigo-300 overflow-x-auto custom-scrollbar leading-relaxed">
+                      {selectedEndpoint.body}
+                    </pre>
                   </div>
-                  <pre className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-[11px] font-mono text-indigo-300 overflow-x-auto custom-scrollbar leading-relaxed">
-                    {selectedEndpoint.body}
-                  </pre>
-                </div>
 
-                {/* Response Schema */}
-                <div>
-                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">
-                    Response JSON (`200 OK`)
+                  {/* Response Schema */}
+                  <div>
+                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 font-mono">
+                      Response JSON (`200 OK`)
+                    </div>
+                    <pre className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-[11px] font-mono text-emerald-300 overflow-x-auto custom-scrollbar leading-relaxed max-h-52">
+                      {selectedEndpoint.response}
+                    </pre>
                   </div>
-                  <pre className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-[11px] font-mono text-emerald-300 overflow-x-auto custom-scrollbar leading-relaxed max-h-52">
-                    {selectedEndpoint.response}
-                  </pre>
                 </div>
               </div>
-            </div>
-          </div>
-        )}
+            </motion.div>
+          )}
 
-        {/* Tab Content 2: WebSocket Protocol */}
-        {activeTab === "socket" && (
-          <div className="space-y-4">
-            <div className="p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-xs text-indigo-200 flex items-center gap-2">
-              <Radio className="w-4 h-4 text-indigo-400 shrink-0" />
-              <span>
-                WebSocket connections connect to root origin <code className="font-mono text-indigo-300">https://frontend-task-chatapp.onrender.com</code> with JWT passed in handshake auth: <code className="font-mono text-indigo-300">{`{ auth: { token } }`}</code>.
-              </span>
-            </div>
+          {/* Tab Content 2: WebSocket Protocol */}
+          {activeTab === "socket" && (
+            <motion.div
+              key="socket"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-4"
+            >
+              <div className="p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-xs text-indigo-200 flex items-center gap-2">
+                <Radio className="w-4 h-4 text-indigo-400 shrink-0" />
+                <span>
+                  WebSocket connections connect to root origin <code className="font-mono text-indigo-300">https://frontend-task-chatapp.onrender.com</code> with JWT passed in handshake auth: <code className="font-mono text-indigo-300">{`{ auth: { token } }`}</code>.
+                </span>
+              </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {SOCKET_EVENTS.map((ev) => (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {SOCKET_EVENTS.map((ev) => (
+                  <div
+                    key={ev.event}
+                    className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 flex flex-col justify-between hover:border-indigo-500/30 transition"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-xs font-bold text-indigo-400 font-mono">
+                          {ev.event}
+                        </span>
+                        <span className="text-[9px] font-mono text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">
+                          Active
+                        </span>
+                      </div>
+                      <div className="text-[10px] font-mono text-slate-400 mb-2">{ev.direction}</div>
+                      <p className="text-xs text-slate-300 mb-3">{ev.desc}</p>
+                    </div>
+                    <pre className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-[10px] font-mono text-slate-300 overflow-x-auto custom-scrollbar">
+                      {ev.payload}
+                    </pre>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {/* Tab Content 3: Edge-Case Matrix */}
+          {activeTab === "resilience" && (
+            <motion.div
+              key="resilience"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.3 }}
+              className="grid grid-cols-1 md:grid-cols-3 gap-4"
+            >
+              {RESILIENCE_ITEMS.map((item, idx) => (
                 <div
-                  key={ev.event}
-                  className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 flex flex-col justify-between"
+                  key={idx}
+                  className="p-5 rounded-2xl bg-slate-950/80 border border-slate-800 flex flex-col justify-between hover:border-emerald-500/30 transition"
                 >
                   <div>
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-xs font-bold text-indigo-400 font-mono">
-                        {ev.event}
-                      </span>
-                      <span className="text-[9px] font-mono text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">
-                        Active
-                      </span>
+                    <div className="flex items-center gap-2 text-xs font-bold text-rose-400 mb-2">
+                      <ShieldAlert className="w-4 h-4 text-rose-400 shrink-0" />
+                      <span>{item.title}</span>
                     </div>
-                    <div className="text-[10px] font-mono text-slate-400 mb-2">{ev.direction}</div>
-                    <p className="text-xs text-slate-300 mb-3">{ev.desc}</p>
+                    <div className="text-xs text-slate-400 mb-3 leading-relaxed">
+                      <strong className="text-slate-300 font-semibold">Observation:</strong> {item.issue}
+                    </div>
                   </div>
-                  <pre className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-[10px] font-mono text-slate-300 overflow-x-auto custom-scrollbar">
-                    {ev.payload}
-                  </pre>
+                  <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-[11px] text-emerald-300 leading-relaxed">
+                    <strong className="font-semibold text-emerald-200">Solution:</strong> {item.solution}
+                  </div>
                 </div>
               ))}
-            </div>
-          </div>
-        )}
-
-        {/* Tab Content 3: Edge-Case Matrix */}
-        {activeTab === "resilience" && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {RESILIENCE_ITEMS.map((item, idx) => (
-              <div
-                key={idx}
-                className="p-5 rounded-2xl bg-slate-950/80 border border-slate-800 flex flex-col justify-between"
-              >
-                <div>
-                  <div className="flex items-center gap-2 text-xs font-bold text-rose-400 mb-2">
-                    <ShieldAlert className="w-4 h-4 text-rose-400 shrink-0" />
-                    <span>{item.title}</span>
-                  </div>
-                  <div className="text-xs text-slate-400 mb-3 leading-relaxed">
-                    <strong className="text-slate-300 font-semibold">Observation:</strong> {item.issue}
-                  </div>
-                </div>
-                <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-[11px] text-emerald-300 leading-relaxed">
-                  <strong className="font-semibold text-emerald-200">Solution:</strong> {item.solution}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
     </section>
   );
 }

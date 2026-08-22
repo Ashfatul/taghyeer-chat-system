@@ -2,12 +2,19 @@
 
 import React from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { MessageSquare, ExternalLink, Sparkles } from "lucide-react";
 
 export default function LandingFooter() {
   return (
-    <footer className="border-t border-slate-800 bg-[#0B0F19] text-slate-400 py-12 relative overflow-hidden select-none">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+    <footer className="border-t border-slate-800 bg-[#0B0F19] text-slate-400 py-8 sm:py-10 relative overflow-hidden select-none">
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-30px" }}
+        transition={{ type: "spring", damping: 22, stiffness: 120 }}
+        className="max-w-6xl mx-auto px-4 sm:px-6"
+      >
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-10 border-b border-slate-800/80">
           {/* Col 1: Brand Info */}
           <div className="md:col-span-2 space-y-3">
@@ -97,7 +104,7 @@ export default function LandingFooter() {
             <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
           </div>
         </div>
-      </div>
+      </motion.div>
     </footer>
   );
 }

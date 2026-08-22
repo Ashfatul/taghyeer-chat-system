@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { motion, type Variants } from "framer-motion";
 import { Cpu, CheckCircle2, Award, Zap, Code, Shield } from "lucide-react";
 
 const TECH_ITEMS = [
@@ -14,11 +15,31 @@ const TECH_ITEMS = [
   { name: "Framer Motion", role: "Physics Micro-Interactions", color: "from-fuchsia-400 to-pink-500" },
 ];
 
+const ITEM_VARIANTS: Variants = {
+  hidden: { opacity: 0, scale: 0.92, y: 20 },
+  show: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      damping: 20,
+      stiffness: 140,
+    },
+  },
+};
+
 export default function TechStackSection() {
   return (
-    <section className="py-16 max-w-6xl mx-auto px-4 sm:px-6 relative">
-      <div className="bg-slate-900/50 border border-slate-800 rounded-3xl p-8 backdrop-blur-xl">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-8 border-b border-slate-800 mb-8">
+    <section className="py-6 sm:py-10 max-w-6xl mx-auto px-4 sm:px-6 relative">
+      <motion.div
+        initial={{ opacity: 0, y: 28 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-40px" }}
+        transition={{ type: "spring", damping: 24, stiffness: 120 }}
+        className="bg-slate-900/60 border border-slate-800 rounded-3xl p-6 sm:p-8 backdrop-blur-xl shadow-2xl"
+      >
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-800 mb-6">
           <div>
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold uppercase tracking-wider mb-2">
               <Cpu className="w-3.5 h-3.5" />
@@ -42,21 +63,29 @@ export default function TechStackSection() {
           </div>
         </div>
 
-        {/* Tech Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        {/* Tech Grid with Staggered Framer Motion Animation */}
+        <motion.div
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ staggerChildren: 0.08 }}
+          className="grid grid-cols-2 sm:grid-cols-4 gap-4"
+        >
           {TECH_ITEMS.map((tech) => (
-            <div
+            <motion.div
               key={tech.name}
-              className="p-4 rounded-2xl bg-slate-950/60 border border-slate-800/80 hover:border-indigo-500/40 transition group"
+              variants={ITEM_VARIANTS}
+              whileHover={{ y: -3, scale: 1.02, transition: { duration: 0.15 } }}
+              className="p-4 rounded-2xl bg-slate-950/60 border border-slate-800/80 hover:border-indigo-500/40 transition group cursor-default shadow-sm"
             >
               <div className="text-xs sm:text-sm font-bold text-white group-hover:text-indigo-300 transition">
                 {tech.name}
               </div>
               <div className="text-[11px] text-slate-500 font-mono mt-0.5">{tech.role}</div>
-            </div>
+            </motion.div>
           ))}
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </section>
   );
 }
