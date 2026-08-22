@@ -18,6 +18,14 @@ export const metadata: Metadata = {
   title: "Taghyeer Chat — Real-Time Conversations Built for Speed",
   description:
     "A high-performance real-time messaging application powered by Socket.io, React 19, and Next.js.",
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "32x32" },
+    ],
+    shortcut: "/favicon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 export default function RootLayout({

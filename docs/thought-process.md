@@ -341,6 +341,7 @@ As an experienced frontend engineer, I approached this build by maintaining full
 - **Interface & Schema Scaffolding**: Fast generation of initial TypeScript data structures mapped from Swagger and OpenAPI documentation.
 - **Design System Acceleration**: Rapid drafting of responsive Tailwind CSS utility classes and visual layout prototypes.
 - **Testing & Diagnostics Scripting**: Quickly generating diagnostic Node.js scripts to stress-test live endpoints and inspect raw socket payloads.
+- **Brand Asset & Favicon Generation**: Used AI tooling to design and generate the customized vector SVG (`app/icon.svg`) and multi-layer ICO (`favicon.ico`) favicon assets aligned with the Deep Space dark aesthetic and brand palette.
 
 ### 4.2 What Was Architected & Solved Manually
 - **Architecture & State Hierarchy**: Rejected simple polling and monolithic stores in favor of an event-driven design combining TanStack Query v5 with Socket.io real-time broadcast listeners.

@@ -71,24 +71,76 @@ The Chat Application API is a hybrid service combining **RESTful HTTP JSON endpo
 
 ## 2. Authentication & Authorization
 
-### Flow
-1. **Passwordless Unified Login/Register**: The client submits a phone number and user name to `POST /api/auth/login`.
-   - If the phone number is new, a new user record is created automatically.
-   - If the phone number already exists, the existing user record is returned.
-   - Both cases return a signed **JWT token** and the **user profile**.
-2. **REST Authentication**: The client supplies the token in the standard HTTP header on all protected requests:
-   ```http
-   Authorization: Bearer <your_jwt_token>
+### 2.1 Passwordless Unified Authentication Flow
+The backend uses a frictionless passwordless authentication model where `POST /api/auth/login` serves as both registration and login:
+1. The user inputs their phone number (e.g. `+12025550101`) and display name (e.g. `Sarah Connor`).
+2. **First-Time User**: The backend provisions a new MongoDB user document and generates a signed JWT.
+3. **Returning User**: The backend matches the phone number, retrieves the existing user document, and generates a signed JWT.
+4. **Token Structure**: The server returns `{ token: string, user: User }`. The JWT contains the user's encoded `id` and claims.
+
+---
+
+### 2.2 Client-Side Session Lifecycle & Persistence Strategy
+
+```
+┌───────────────────────────────────────────────────────────────────────────────────────┐
+│                                 SESSION LIFECYCLE                                     │
+│                                                                                       │
+│  [ Login / Provision ]                                                                │
+│        │                                                                              │
+│        ▼                                                                              │
+│  POST /api/auth/login ──► Receive { token, user }                                     │
+│        │                                                                              │
+│        ├──► 1. Persist JWT in localStorage ("chat_auth_token")                         │
+│        ├──► 2. Store user in React AuthContext state                                  │
+│        ├──► 3. Attach Bearer token to all REST apiClient headers                      │
+│        └──► 4. Establish Socket.io connection with auth: { token }                    │
+│                                                                                       │
+│  [ Page Refresh / Revisit ]                                                           │
+│        │                                                                              │
+│        ▼                                                                              │
+│  Read token from localStorage ──► GET /api/auth/me                                    │
+│        │                                                                              │
+│        ├── [ 200 OK ] ────────► Hydrate User + Connect Socket ──► Render /chat        │
+│        └── [ 401 Unauthorized ] ► Clear localStorage + Disconnect Socket ──► /login    │
+│                                                                                       │
+│  [ Logout ]                                                                           │
+│        │                                                                              │
+│        ▼                                                                              │
+│  Clear localStorage + Reset Auth State + socket.disconnect() ──► Redirect /login      │
+└───────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+1. **Storage Mechanism**: The JWT token is securely stored in `localStorage` under the key `chat_auth_token`.
+2. **Session Bootstrapping (`initializeAuth`)**:
+   - When the client loads, `AuthProvider` reads the token from `localStorage`.
+   - If present, it dispatches `GET /api/auth/me` with `Authorization: Bearer <token>`.
+   - Upon a `200 OK` response, it hydrates user state, initializes the real-time Socket.io gateway, and kicks off background directory caching.
+3. **Session Invalidation**:
+   - If `GET /api/auth/me` returns `401 Unauthorized` (token expired or revoked), the client cleans up `localStorage`, clears the user context, disconnects the WebSocket, and redirects the user to `/login`.
+4. **REST Request Interceptor**:
+   - All protected requests pass through the centralized `apiClient` wrapper, which dynamically injects the `Authorization: Bearer <token>` header:
+   ```typescript
+   const headers: HeadersInit = {
+     "Content-Type": "application/json",
+     ...(token ? { Authorization: `Bearer ${token}` } : {}),
+   };
    ```
-3. **WebSocket Authentication**: The JWT token is supplied in the Socket.io connection handshake auth object:
+5. **WebSocket Handshake Auth**:
+   - When establishing the real-time Socket.io connection, the token is passed in the handshake payload:
    ```typescript
    import { io } from "socket.io-client";
+
    const socket = io("https://frontend-task-chatapp.onrender.com", {
      auth: { token: "<your_jwt_token>" },
+     transports: ["websocket", "polling"],
+     reconnection: true,
    });
    ```
 
-### Error Response Schema
+---
+
+### 2.3 Error Response Schema
 When a request fails authentication, validation, or authorization, the server returns a structured error object:
 ```json
 {
@@ -104,6 +156,14 @@ When a request fails authentication, validation, or authorization, the server re
   }
 }
 ```
+
+| Error Code | HTTP Status | Meaning |
+| :--- | :--- | :--- |
+| `NO_TOKEN` | `400 Bad Request` | Missing `Authorization` header on a protected route |
+| `INVALID_TOKEN` | `401 Unauthorized` | JWT is expired, malformed, or has an invalid signature |
+| `FORBIDDEN` | `403 Forbidden` | Authenticated user lacks admin permission for the action |
+| `VALIDATION_ERROR` | `400 Bad Request` | Request payload failed schema validation |
+| `NOT_FOUND` | `404 Not Found` | Requested conversation or user resource does not exist |
 
 ---
 
